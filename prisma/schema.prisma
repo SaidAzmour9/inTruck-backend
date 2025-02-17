@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  fullName  String
+  phone     String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  // Relations
+  trucks    Truck[]
+  orders    Order[]
+}
+
+model Truck {
+  id        String   @id @default(cuid())
+  carrier   String
+  driverId  String
+  location  String
+  status    String
+  capacity  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  // Relations
+  driver    User     @relation(fields: [driverId], references: [id])
+  orders    Order[]
+  tracking  Tracking[]
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  truckId     String
+  customerId  String
+  location    String
+  status      String
+  pickup_loc  String
+  delivery_loc String
+  weight      String
+  price       String
+  date        DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  // Relations
+  truck       Truck    @relation(fields: [truckId], references: [id])
+  customer    User     @relation(fields: [customerId], references: [id])
+  tracking    Tracking?
+  payment     Payment?
+}
+
+model Tracking {
+  id        String   @id @default(cuid())
+  orderId   String   @unique
+  location  String
+  status    String
+  date      DateTime
+  truckId   String
+  // Relation (One-to-One with Order)
+  order     Order    @relation(fields: [orderId], references: [id])
+  truck     Truck    @relation(fields: [truckId], references: [id]) //  Relation with Truck
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  orderId   String   @unique
+  amount    String
+  date      DateTime
+  status    String
+  // Relation (One-to-One with Order)
+  order     Order    @relation(fields: [orderId], references: [id])
+}
