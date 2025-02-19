@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const {PrismaClient} = require('@prisma/client');
+const transporter = require('../utils/email');
+const crypto = require('crypto');
 
 const prisma = new PrismaClient()
 
@@ -57,6 +59,64 @@ async function login(req,res) {
     }
 }
 
+async function forgetPassword(req,res) {
+    try {
+        const { email } = req.body;
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            return res.status(400).json({ message: 'Email not found' });
+        }
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        await prisma.user.update({
+            where: { email },
+            data: { resetToken },       
+        });
+        
+        
+        const resetLink = `${req.protocol}://${req.get('host')}/reset_password/${resetToken}`;
+        const info = await transporter.sendMail({
+            from: process.env.MAIL_USER,
+            to: email,
+            subject: "Reset Password",
+            text: `Click on this link to reset your password: ${resetLink}`,
+        });
+          res.status(200).json({ "Message sent: %s": info.messageId });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+        
+    
+}
+
+async function resetPassword(req,res) {
+    try {
+        const { password, confirmPassword } = req.body;
+        const { token } = req.params;
+        const user = await prisma.user.findUnique({
+            where: { resetToken: token },
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid token or user not found' });
+        }
+        if (password !== confirmPassword) {
+            return res.status(400).json({ message: 'Passwords do not match' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { password: hashedPassword, resetToken: null },
+        });
+
+        res.status(200).json({ message: 'Password reset successfully' });
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
+
+
 
 async function logOut(req,res) {
     try {
@@ -71,4 +131,4 @@ async function logOut(req,res) {
 }
 
 
-module.exports = {signUp,login,logOut};
+module.exports = {signUp,login,logOut,forgetPassword,resetPassword};

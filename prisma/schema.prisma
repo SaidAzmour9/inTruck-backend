@@ -16,6 +16,7 @@ model User {
   createdAt DateTime @default(now()) 
   trucks    Truck[]
   orders    Order[]
+  resetToken  String?  @unique
 }
 
 model Truck {
