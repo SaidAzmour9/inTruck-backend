@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 
 async function signUp(req,res) {
     try {
-        const { email, password, name, phone } = req.body;
+        const { email, password, phone } = req.body;
         const user = await prisma.user.findUnique({ where: { email } });
         if (user) {
             return res.status(400).json({ message: 'Email already exists' });
@@ -18,7 +18,6 @@ async function signUp(req,res) {
             data: {
                 email:email,
                 password:hashedPassword,
-                fullName:name,
                 phone:phone
             }
         });

@@ -9,14 +9,29 @@ datasource db {
 
 model User {
   id        String   @id @default(cuid())
-  fullName  String
-  phone     String
   email     String   @unique
   password  String
+  userType   String
   createdAt DateTime @default(now()) 
-  trucks    Truck[]
   orders    Order[]
   resetToken  String?  @unique
+}
+
+model Company{
+  id        String   @id @default(cuid())
+  name     String
+  city     String
+  address  String
+  ice      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Individual{
+  id        String   @id @default(cuid())
+  name     String
+  cin     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Truck {
@@ -28,8 +43,6 @@ model Truck {
   capacity  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  // Relations
-  driver    User     @relation(fields: [driverId], references: [id])
   orders    Order[]
   tracking  Tracking[]
 }
@@ -61,7 +74,6 @@ model Tracking {
   status    String
   date      DateTime
   truckId   String
-  // Relation (One-to-One with Order)
   order     Order    @relation(fields: [orderId], references: [id])
   truck     Truck    @relation(fields: [truckId], references: [id]) //  Relation with Truck
 }
@@ -72,6 +84,5 @@ model Payment {
   amount    String
   date      DateTime
   status    String
-  // Relation (One-to-One with Order)
   order     Order    @relation(fields: [orderId], references: [id])
 }
