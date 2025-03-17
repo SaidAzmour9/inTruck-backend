@@ -1,19 +1,47 @@
 const { check, validationResult, body } = require('express-validator');
 
 const validation = {
-    validateUser: [
-        check('name').notEmpty().withMessage('Name is required'),
-        check('email').isEmail().withMessage('Invalid email address'),
-        check('password').isLength({ min: 8 }).withMessage('Password must be at least 8 character'),
-        check('phone').matches(/^\+?\d{10,15}$/).withMessage('Phone number is required'),
-        //company
-        check('city').if(body('userType').equals('Company')).notEmpty().withMessage('City is required'),
-        check('address').if(body('userType').equals('Company')).notEmpty().withMessage('Address is required'),
-        check('ice').if(body('userType').equals('Company')).notEmpty().withMessage('Ice is required'),
-        //individual
-        check('cin').if(body('userType').equals('Individual')).notEmpty().withMessage('Cin is required'),
-        check('name').if(body('userType').equals('Individual')).notEmpty().withMessage('Name is required'),
-    ],
+    validateUser : [
+        check("email").isEmail().withMessage("Invalid email address"),
+        check("password")
+          .isLength({ min: 8 })
+          .withMessage("Password must be at least 8 characters"),
+        check("phone")
+          .matches(/^\+?\d{10,15}$/)
+          .withMessage("Phone number must be between 10 and 15 digits"),
+        check("userType")
+          .isIn(["Individual", "Company"])
+          .withMessage("User type must be 'Individual' or 'Company'"),
+        check("address").notEmpty().withMessage("Address is required"),
+      
+        // Company-specific fields
+        check("companyName")
+          .if(body("userType").equals("Company"))
+          .notEmpty()
+          .withMessage("Company name is required"),
+        check("rc")
+          .if(body("userType").equals("Company"))
+          .notEmpty()
+          .withMessage("Commercial registration number (RC) is required"),
+        check("nIf")
+          .if(body("userType").equals("Company"))
+          .notEmpty()
+          .withMessage("Tax identification number (NIF) is required"),
+        check("responsableName")
+          .if(body("userType").equals("Company"))
+          .isString()
+          .withMessage("Responsible name must be a string"),
+      
+        // Individual-specific fields
+        check("fullName")
+          .if(body("userType").equals("Individual"))
+          .notEmpty()
+          .withMessage("Full name is required for individuals"),
+        check("nationalId")
+          .if(body("userType").equals("Individual"))
+          .notEmpty()
+          .withMessage("National ID is required"),
+      ],
     validateLogin: [
         check('email')
             .isEmail()

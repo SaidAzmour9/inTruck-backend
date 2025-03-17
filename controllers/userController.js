@@ -8,22 +8,46 @@ const prisma = new PrismaClient()
 
 async function signUp(req,res) {
     try {
-        const { email, password, phone } = req.body;
+        const { email, password, phone,userType,fullName,nationalId,address,companyName,rc,nIf,responsableName } = req.body;
         const user = await prisma.user.findUnique({ where: { email } });
         if (user) {
             return res.status(400).json({ message: 'Email already exists' });
             }
+            console.log(email, password, phone,userType,fullName,nationalId,address,companyName,rc,nIf,responsableName);
+            
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await prisma.user.create({
             data: {
                 email:email,
                 password:hashedPassword,
-                phone:phone
+                userType:userType,
             }
-        });
-        res.status(200).json(newUser)
-
-        
+        })
+            if(userType === 'Company'){
+                await prisma.company.create({
+                    data: {
+                        userId: newUser.id,
+                        companyName: companyName,
+                        phone: phone,
+                        address: address,
+                        rc: rc,
+                        nIf: nIf,
+                        responsableName: responsableName,
+                    }
+                })
+            }
+            if(userType === 'Individual'){
+                await prisma.individual.create({
+                    data: {
+                        userId: newUser.id,
+                        fullName: fullName,
+                        nationalId: nationalId,
+                        address: address,
+                        phone: phone,
+                    }   
+                })
+            }
+            return res.status(201).json({ message: 'Account created successfully' }); 
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });

@@ -10,7 +10,7 @@ const userRoute = require('./routes/userRoute')
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/users',userRoute);
+app.use('/auth',userRoute);
 
 
 

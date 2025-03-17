@@ -19,17 +19,23 @@ model User {
 
 model Company{
   id        String   @id @default(cuid())
-  name     String
-  city     String
+  userId  String
+  companyName    String
+  responsableName    String
+  phone   String
   address  String
-  ice      String
+  rc      String
+  nIf     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 model Individual{
   id        String   @id @default(cuid())
-  name     String
-  cin     String
+  userId  String
+  fullName     String
+  nationalId     String
+  phone   String
+  address  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

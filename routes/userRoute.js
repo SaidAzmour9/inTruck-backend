@@ -5,7 +5,7 @@ const { validation, errorValidatorHandler} = require('../middlewares/validator')
 const auth = require('../middlewares/auth')
 
 
-router.post('/signUp',validation.validateUser,errorValidatorHandler,signUp);
+router.post('/register',validation.validateUser,errorValidatorHandler,signUp);
 router.post('/login',validation.validateLogin,errorValidatorHandler,login)
 router.get('/logout',auth,logOut);
 router.post('/forgetPassword',validation.validateForgotPassword ,forgetPassword);
