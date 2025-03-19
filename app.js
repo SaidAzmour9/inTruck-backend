@@ -9,13 +9,13 @@ const userRoute = require('./routes/userRoute')
 
 app.use(express.json());
 app.use(cookieParser());
-
-app.get('/' , (req , res)=>{
-   res.send('hello from simple server :)')
-})
+app.use(express.urlencoded({ extended: true }));
 
 
 app.use('/auth',userRoute);
+app.get('/' , (req , res)=>{
+   res.send('hello from simple server :)')
+})
 
 
 
