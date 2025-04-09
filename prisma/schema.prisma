@@ -57,16 +57,20 @@ model Order {
   id          String   @id @default(cuid())
   truckId     String
   customerId  String
-  location    String
-  status      String
+  shipment_range String
   pickup_loc  String
   delivery_loc String
-  weight      String
-  price       String
-  date        DateTime
+  width Decimal
+  height Decimal
+  weight  Decimal
+  quantity Int
+  shipment_info String
+  shipment_note String?
+  price Decimal
+  pickup_date DateTime
+  delivery_date DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  // Relations
   truck       Truck    @relation(fields: [truckId], references: [id])
   customer    User     @relation(fields: [customerId], references: [id])
   tracking    Tracking?
