@@ -5,6 +5,7 @@ require('dotenv').config();
 const port = process.env.PORT || 3000; 
 const userRoute = require('./routes/userRoute') 
 const paymentRoute = require('./routes/paymentRoutes')
+const cors = require('cors');
 
 
 
@@ -13,10 +14,16 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 
+
 app.use('/auth',userRoute);
 app.use('/payment',paymentRoute)
 
-
+app.use(cors({
+    origin: ['http://localhost:3000', 'http://localhost:5173'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+  }));
 
 // const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 // app.post('/distance', async (req, res) => {
