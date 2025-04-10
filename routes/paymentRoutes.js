@@ -9,5 +9,5 @@ const prisma = new PrismaClient()
 
 
 router.post('/create-payment-intent', createPaymentIntent);
-router.post('/webhook', express.raw({ type: 'application/json' }), handleWebhook);
+router.post('/webhook', handleWebhook);
 module.exports = router;
