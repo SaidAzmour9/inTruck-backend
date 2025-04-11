@@ -8,19 +8,20 @@ const prisma = new PrismaClient()
 
 async function signUp(req,res) {
     try {
-        const { email, password, phone,userType,fullName,nationalId,address,companyName,rc,nIf,responsableName } = req.body;
+        const { email,role, password, phone,userType,fullName,nationalId,address,companyName,rc,nIf,responsableName } = req.body;
         const user = await prisma.user.findUnique({ where: { email } });
         if (user) {
             return res.status(400).json({ message: 'Email already exists' });
             }
-            console.log(email, password, phone,userType,fullName,nationalId,address,companyName,rc,nIf,responsableName);
+            console.log(email,role, password, phone,userType,fullName,nationalId,address,companyName,rc,nIf,responsableName);
             
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await prisma.user.create({
             data: {
                 email:email,
                 password:hashedPassword,
-                userType:userType,
+                userType:userType.toUpperCase(),
+                role: role ? role.toUpperCase() : 'USER',
             }
         })
             if(userType === 'Company'){
@@ -44,6 +45,7 @@ async function signUp(req,res) {
                         nationalId: nationalId,
                         address: address,
                         phone: phone,
+                        
                     }   
                 })
             }
@@ -66,7 +68,7 @@ async function login(req,res) {
         if (!isValidPassword) {
             return res.status(400).json({ message: 'Invalid password' });
         }
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
+        const token = jwt.sign({ userId: user.id,role: user.role }, process.env.JWT_SECRET_KEY, {
             expiresIn: '1h',
         });
         res.cookie('token',token,{
@@ -141,6 +143,25 @@ async function resetPassword(req,res) {
 
 
 
+//get all users
+async function getAllUsers(req,res) {
+    try {
+        const users = await prisma.user.findMany();
+        if (!users) {
+            return res.status(404).json({ message: 'No users found' })
+        }
+        res.status(200).json({ users });
+    }
+    catch (error) {  
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+    }
+
+
+
+
+
 async function logOut(req,res) {
     try {
         res.clearCookie('token');
@@ -154,4 +175,21 @@ async function logOut(req,res) {
 }
 
 
-module.exports = {signUp,login,logOut,forgetPassword,resetPassword};
+// getUserProfile
+async function getUserProfile(req,res) {
+    try {
+        const { id } = req.params;
+        const user = await prisma.user.findUnique({ where: { id } });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' })
+        }
+        res.status(200).json({ user });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+    }
+
+
+module.exports = {signUp,login,logOut,forgetPassword,resetPassword,getUserProfile,getAllUsers};

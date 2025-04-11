@@ -5,6 +5,7 @@ require('dotenv').config();
 const port = process.env.PORT || 3000; 
 const userRoute = require('./routes/userRoute') 
 const paymentRoute = require('./routes/paymentRoutes')
+const adminRoute = require('./routes/adminRoute')
 const cors = require('cors');
 
 
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/auth', userRoute);
 app.use('/payment', paymentRoute);
+app.use('/admin', adminRoute);
 
 
 app.listen(port, () => {
