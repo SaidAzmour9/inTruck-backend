@@ -192,4 +192,6 @@ async function getUserProfile(req,res) {
     }
 
 
+
+
 module.exports = {signUp,login,logOut,forgetPassword,resetPassword,getUserProfile,getAllUsers};
