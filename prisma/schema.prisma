@@ -70,13 +70,12 @@ model Individual {
 model Truck {
   id         String       @id @default(cuid())
   carrier    String
-  driverId   String
+  driverId   String?
   location   String
   status     TruckStatus
-  capacity   String
+  capacity   String?
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
-
   orders     Order[]
   tracking   Tracking[]
 }
@@ -108,16 +107,16 @@ model Order {
 model Tracking {
   id        String         @id @default(cuid())
   orderId   String         @unique
-  location  String
   status    TrackingStatus
-  date      DateTime
-  truckId   String
+  truckId   String?        // optional
   order     Order          @relation(fields: [orderId], references: [id])
-  truck     Truck          @relation(fields: [truckId], references: [id])
+  truck     Truck?         @relation(fields: [truckId], references: [id])  // optional
 }
+
 
 model Payment {
   id        String   @id @default(cuid())
+  paymenetMethod String
   orderId   String   @unique
   amount    String
   date      DateTime

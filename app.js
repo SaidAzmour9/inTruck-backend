@@ -10,6 +10,7 @@ const dashboardRoute = require('./routes/dashboardRoute')
 const cors = require('cors');
 
 
+
 app.use(cors({
     origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -27,6 +28,7 @@ app.use('/auth', userRoute);
 app.use('/dashboard', dashboardRoute);
 app.use('/payment', paymentRoute);
 app.use('/admin', adminRoute);
+
 
 
 

@@ -24,13 +24,18 @@ async function CalculDistance(req, res) {
       const durationText = element.duration.text;
       const distanceKm = parseFloat(distanceText.split(' ')[0]);
       const distanceRounded = Math.round(distanceKm);
+      const pricePerKm = 7;
+      const PricePerKg = 2.5;
+      const weight = 10; // Example weight in kg
+      const quantity = 1; // Example quantity
+      const price = (pricePerKm * distanceRounded) + (PricePerKg * weight * quantity);
 
-      // Store in request for access in next middleware or controller
       req.distanceData = {
         distanceText,
         distanceKm,
         distanceRounded,
-        durationText
+        durationText,
+        price:`price: ${price} dh`,
       };
       res.status(200).json(req.distanceData); // Send the distance data back in the response
 
