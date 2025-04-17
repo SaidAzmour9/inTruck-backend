@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Truck" ADD COLUMN     "status" TEXT NOT NULL DEFAULT 'AVAILABLE';

@@ -38,7 +38,6 @@ async function createOrder(req, res) {
         shipment_note,
         price,
         pickup_date: new Date(pickup_date),
-        delivery_date: new Date(delivery_date),
         // Tracking without truck
         tracking: {
           create: {
@@ -49,7 +48,7 @@ async function createOrder(req, res) {
         // Payment
         payment: {
           create: {
-            paymenetMethod: payment_method,
+            paymentMethod: payment_method,
             amount: price.toString(),
             date: new Date(),
             status: payment_method === 'cash_on_delivery' ? 'unpaid' : 'pending'

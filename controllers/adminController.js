@@ -1,25 +1,76 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const moment = require('moment');
 
-// 📊 Dashboard
+//  Dashboard
 exports.getDashboard = async (req, res) => {
   try {
-    const [users, trucks, orders, payments] = await Promise.all([
-      prisma.user.count(),
-      prisma.truck.count(),
-      prisma.order.count(),
-      prisma.payment.findMany(),
-    ]);
+    // Fetch orders for today
+    const orders = await prisma.order.findMany({
+      where: {
+        delivery_date: {
+          gte: moment().startOf('day').toDate(),
+          lte: moment().endOf('day').toDate(),
+        },
+      },
+      include: {
+        tracking: true,
+      },
+    });
+    
 
+    // Filter today's delivered orders
+    const deliveriesToday = orders.filter(
+      order => order.tracking?.status === 'DELIVERED'
+    ).length;
+    
+    const revenueToday = orders.reduce((sum, order) => {
+      return order.tracking?.status === 'DELIVERED'
+        ? sum + parseFloat(order.price)
+        : sum;
+    }, 0);
+    
+
+    // Get available drivers
+    const availableDrivers = await prisma.user.count({
+      where: {
+        userType: 'DRIVER',
+      }
+    });
+
+    // Get available trucks
+    const activeTrucks = await prisma.truck.count({
+      where: {
+        status: 'AVAILABLE',
+      }
+    });
+
+    // Get total revenue (assuming 'payments' is an array of payments)
+    const payments = await prisma.payment.findMany();
     const totalRevenue = payments.reduce((acc, p) => acc + parseFloat(p.amount), 0);
 
-    res.json({ users, trucks, orders, totalRevenue });
+    // Fetch the total number of users and trucks
+    const users = await prisma.user.count();
+    const trucks = await prisma.truck.count();
+
+    // Send the dashboard data
+    res.json({
+      users,
+      trucks,
+      totalRevenue,
+      deliveriesToday,
+      revenueToday,
+      availableDrivers,
+      activeTrucks,
+    });
   } catch (error) {
+    console.error('Error loading dashboard:', error);
     res.status(500).json({ message: 'Error loading dashboard', error });
   }
 };
 
-// 👤 Users
+
+//  Users
 exports.getUsers = async (req, res) => {
   const users = await prisma.user.findMany();
   res.json(users);
@@ -61,12 +112,27 @@ exports.getTruckById = async (req, res) => {
 };
 
 exports.addTruck = async (req, res) => {
-  const { carrier, driverId, location, status, capacity } = req.body;
-  const truck = await prisma.truck.create({
-    data: { carrier, driverId, location, status, capacity, createdAt: new Date(), updatedAt: new Date() },
-  });
-  res.json(truck);
+  try {
+    const { truckNumber, truckYear, model, truckType, technicalDate, capacity } = req.body;
+
+    const truck = await prisma.truck.create({
+      data: {
+        truckNumber,
+        truckYear,
+        model,
+        truckType,
+        technicalDate: new Date(technicalDate),
+        capacity
+      }
+    });
+
+    res.status(201).json(truck);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: 'Invalid input', error });
+  }
 };
+
 
 exports.updateTruck = async (req, res) => {
   const { id } = req.params;
@@ -99,9 +165,47 @@ exports.getOrderById = async (req, res) => {
 exports.updateOrderStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  const order = await prisma.order.update({ where: { id }, data: { status, updatedAt: new Date() } });
-  res.json(order);
+  try {
+    const existingTracking = await prisma.tracking.findUnique({
+      where: { orderId: id },
+    });
+
+    let tracking;
+    let updatedOrder;
+
+    if (existingTracking) {
+      // If the tracking record exists, update it
+      tracking = await prisma.tracking.update({
+        where: { orderId: id },
+        data: { status },
+      });
+    } else {
+      // If no tracking record exists, create a new one
+      tracking = await prisma.tracking.create({
+        data: {
+          orderId: id,
+          status,
+        },
+      });
+    }
+
+    // If status is 'delivered', update the order's delivery date
+    if (status === 'DELIVERED') {
+      updatedOrder = await prisma.order.update({
+        where: { id },
+        data: { delivery_date: new Date() },
+      });
+    }
+
+    res.json({ tracking, updatedOrder });
+  } catch (error) {
+    console.error("Erreur updateOrderStatus:", error);
+    res.status(500).json({ message: "Erreur lors de la mise à jour du statut de suivi" });
+  }
 };
+
+
+
 
 exports.deleteOrder = async (req, res) => {
   const { id } = req.params;

@@ -68,17 +68,18 @@ model Individual {
 }
 
 model Truck {
-  id         String       @id @default(cuid())
-  carrier    String
-  driverId   String?
-  location   String
-  status     TruckStatus
-  capacity   String?
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  orders     Order[]
-  tracking   Tracking[]
+  id             String    @id @default(cuid())
+  truckNumber    String    @unique
+  truckYear      Int
+  model          String
+  truckType      String
+  technicalDate  DateTime
+  capacity       Decimal   @db.Decimal(10, 2)
+  status         String    @default("AVAILABLE")
+  orders         Order[]
+  tracking       Tracking[]
 }
+
 
 model Order {
   id            String     @id @default(cuid())
@@ -95,7 +96,7 @@ model Order {
   shipment_note String?
   price         Decimal    @db.Decimal(10, 2)
   pickup_date   DateTime
-  delivery_date DateTime
+  delivery_date DateTime?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   truck         Truck?     @relation(fields: [truckId], references: [id])
@@ -116,7 +117,7 @@ model Tracking {
 
 model Payment {
   id        String   @id @default(cuid())
-  paymenetMethod String
+  paymentMethod String
   orderId   String   @unique
   amount    String
   date      DateTime
