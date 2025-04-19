@@ -17,7 +17,6 @@ async function createOrder(req, res) {
       shipment_info,
       shipment_note,
       pickup_date,
-      delivery_date,
       payment_method,
       price
     } = req.body;

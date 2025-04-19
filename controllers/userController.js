@@ -98,7 +98,7 @@ async function forgetPassword(req,res) {
         });
         
         
-        const resetLink = `${req.protocol}://${req.get('host')}/reset_password/${resetToken}`;
+        const resetLink = `${req.protocol}://localhost:5173/reset_password/${resetToken}`;
         const info = await transporter.sendMail({
             from: process.env.MAIL_USER,
             to: email,

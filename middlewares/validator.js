@@ -59,6 +59,28 @@ const validation = {
         check('password').isLength({ min: 8 }).withMessage('Password must be at least 8 character'),
         check('confirmPassword').isLength({ min: 8 }).withMessage('Confirm Password must be same of password ')
         ],
+    validateOrder: [
+      check('name').isString().withMessage('Name must be a string'),
+      check('shipment_range').isString().withMessage('Shipment range must be a string'),
+      check('shipping_address').isString().withMessage('Shipping address must be a string'),
+      check('pickup_loc').isString().withMessage('Pickup location must be a string'),
+      check('pickup_time').isString().withMessage('Pickup time must be a string'),
+      check('pickup_date').isString().withMessage('Pickup date must be a string'),
+      check('delivery_loc').isString().withMessage('Delivery location must be a string'),
+      check('delivery_date').isString().withMessage('Delivery date must be a string'),
+      check('width').isNumeric().withMessage('Width must be a number'),
+      check('height').isNumeric().withMessage('Height must be a number'),
+      check('weight').isNumeric().withMessage('Weight must be a number'),
+      check('quantity').isNumeric().withMessage('Quantity must be a number'),
+      check('shipment_info').isString().withMessage('Shipment info must be a string'),
+      check('package_type').isString().withMessage('Package type must be a string'),
+      check('shipment_note').isString().withMessage('Shipment note must be a string'),
+      check('payment_method').isString().withMessage('Payment method must be a string'),
+      check('price').isNumeric().withMessage('Price must be a number'),
+      check('delivery_loc').isString().withMessage('Delivery location must be a string'),
+      check('delivery_city').isString().withMessage('Delivery city must be a string'),
+      check('pickup_city').isString().withMessage('Pickup city must be a string'),
+    ]
 
 };
 
