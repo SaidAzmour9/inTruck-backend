@@ -12,7 +12,7 @@ const cors = require('cors');
 
 
 app.use(cors({
-    origin: '*',
+    origin: ['*', 'http://localhost:3000', 'https://in-truck-client-px4uaenfj-hamza-bensalems-projects.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
