@@ -11,25 +11,13 @@ const cors = require('cors');
 
 
 
-const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'https://in-truck-client-px4uaenfj-hamza-bensalems-projects.vercel.app'
-  ];
-  
-  app.use(cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (e.g., mobile apps, Postman)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true); // Allow the origin
-      } else {
-        callback(new Error('Not allowed by CORS')); // Reject the request
-      }
-    },
+app.use(cors({
+    origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true // Allow sending credentials (cookies)
-  }));
+    credentials: true
+}));
+
 
 app.use(express.json());
 app.use(cookieParser());
