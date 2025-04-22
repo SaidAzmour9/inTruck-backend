@@ -3,13 +3,20 @@ const app = express();
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const port = process.env.PORT || 3000; 
+const rateLimit = require('express-rate-limit');
 const userRoute = require('./routes/userRoute') 
 const paymentRoute = require('./routes/paymentRoutes')
 const adminRoute = require('./routes/adminRoute')
 const dashboardRoute = require('./routes/dashboardRoute')
 const cors = require('cors');
 
-
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000,
+	limit: 100, 
+	standardHeaders: 'draft-8', 
+	legacyHeaders: false, 
+})
+app.use(limiter)
 
 app.use(cors({
     origin: '*',

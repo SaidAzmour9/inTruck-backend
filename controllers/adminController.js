@@ -113,7 +113,7 @@ exports.getTruckById = async (req, res) => {
 
 exports.addTruck = async (req, res) => {
   try {
-    const { truckNumber, truckYear, model, truckType, technicalDate, capacity } = req.body;
+    const { truckNumber, truckYear, model, truckType, technicalDate, capacity,location } = req.body;
 
     const truck = await prisma.truck.create({
       data: {
@@ -121,6 +121,8 @@ exports.addTruck = async (req, res) => {
         truckYear,
         model,
         truckType,
+        location,
+
         technicalDate: new Date(technicalDate),
         capacity
       }
@@ -164,45 +166,94 @@ exports.getOrderById = async (req, res) => {
 
 exports.updateOrderStatus = async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { status, truckNumber, reason } = req.body;
+
   try {
+    // Mise à jour ou création du tracking
     const existingTracking = await prisma.tracking.findUnique({
       where: { orderId: id },
     });
 
-    let tracking;
-    let updatedOrder;
+    const tracking = existingTracking
+      ? await prisma.tracking.update({
+          where: { orderId: id },
+          data: { status },
+        })
+      : await prisma.tracking.create({
+          data: { orderId: id, status },
+        });
 
-    if (existingTracking) {
-      // If the tracking record exists, update it
-      tracking = await prisma.tracking.update({
-        where: { orderId: id },
-        data: { status },
-      });
-    } else {
-      // If no tracking record exists, create a new one
-      tracking = await prisma.tracking.create({
+    // Gérer les cas spécifiques
+    if (status === 'DELIVERED') {
+      const updatedOrder = await prisma.order.update({
+        where: { id },
         data: {
-          orderId: id,
+          delivery_date: new Date(),
           status,
         },
       });
+      return res.json({ tracking, updatedOrder });
     }
 
-    // If status is 'delivered', update the order's delivery date
-    if (status === 'DELIVERED') {
-      updatedOrder = await prisma.order.update({
-        where: { id },
-        data: { delivery_date: new Date() },
+    if (status === 'IN_TRANSIT') {
+      const truck = await prisma.truck.findUnique({
+        where: { truckNumber },
       });
+
+      if (!truck) {
+        return res.status(404).json({ message: 'Truck not found' });
+      }
+
+      if (truck.status !== 'AVAILABLE') {
+        return res.status(400).json({ message: 'Truck is not available' });
+      }
+
+      await prisma.truck.update({
+        where: { truckNumber },
+        data: { status: 'ON_DELIVERY' },
+      });
+
+      const updatedOrder = await prisma.order.update({
+        where: { id },
+        data: {
+          truckNumber,
+          status,
+        },
+      });
+
+      return res.json({ tracking, updatedOrder });
     }
+
+    if (status === 'CANCELLED') {
+      await prisma.tracking.delete({
+        where: { orderId: id },
+      });
+
+      const updatedOrder = await prisma.order.update({
+        where: { id },
+        data: {
+          status,
+          reason,
+        },
+      });
+
+      return res.json({ tracking: null, updatedOrder });
+    }
+
+    // Default case: update only status
+    const updatedOrder = await prisma.order.update({
+      where: { id },
+      data: { status },
+    });
 
     res.json({ tracking, updatedOrder });
   } catch (error) {
     console.error("Erreur updateOrderStatus:", error);
-    res.status(500).json({ message: "Erreur lors de la mise à jour du statut de suivi" });
+    res.status(500).json({ message: "Erreur lors de la mise à jour du statut de suivi", error });
   }
 };
+
+
 
 
 

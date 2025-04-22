@@ -75,7 +75,8 @@ model Truck {
   truckType      String
   technicalDate  DateTime
   capacity       Decimal   @db.Decimal(10, 2)
-  status         String    @default("AVAILABLE")
+  status TruckStatus @default(AVAILABLE)
+  location      String?
   orders         Order[]
   tracking       Tracking[]
 }
@@ -96,7 +97,9 @@ model Order {
   shipment_note String?
   price         Decimal    @db.Decimal(10, 2)
   pickup_date   DateTime
+  reason      String?
   delivery_date DateTime?
+  status TrackingStatus @default(PENDING)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   truck         Truck?     @relation(fields: [truckId], references: [id])
@@ -119,7 +122,7 @@ model Payment {
   id        String   @id @default(cuid())
   paymentMethod String
   orderId   String   @unique
-  amount    String
+  amount Decimal @db.Decimal(10, 2)
   date      DateTime
   status    String
   order     Order    @relation(fields: [orderId], references: [id])
