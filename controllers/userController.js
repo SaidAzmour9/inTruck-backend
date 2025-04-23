@@ -73,9 +73,11 @@ async function login(req,res) {
         });
         res.cookie('token', token, {
             httpOnly: true,
-            secure: false, // must be false in localhost (true only in HTTPS)
-            sameSite: 'Lax' // or 'None' for cross-origin if needed
+            secure: true,            // ✅ must be true on Railway (HTTPS)
+            sameSite: 'None',        // ✅ required for cross-origin
+            maxAge: 24 * 60 * 60 * 1000 // 1 day
           });
+          
         res.status(200).json({ token, userId: user.id });
 
         
