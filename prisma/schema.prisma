@@ -7,58 +7,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserType {
-  INDIVIDUAL
-  COMPANY
-  ADMIN
-  DRIVER
-}
-
-enum TruckStatus {
-  AVAILABLE
-  ON_DELIVERY
-  MAINTENANCE
-  UNAVAILABLE
-}
-
-enum TrackingStatus {
-  PENDING
-  IN_TRANSIT
-  DELIVERED
-  CANCELLED
-}
-
 model User {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  password    String
-  userType    UserType
-  role       String @default("USER")
-  createdAt   DateTime @default(now()) 
-  resetToken  String?  @unique
-  orders      Order[]
-  company     Company?
-  individual  Individual?
+  id           String         @id @default(cuid())
+  email        String         @unique
+  password     String
+  createdAt    DateTime       @default(now())
+  resetToken   String?        @unique
+  userType     String
+  Notification Notification[]
+  orders       Order[]
 }
 
 model Company {
-  id             String   @id @default(cuid())
-  userId         String   @unique
-  user           User     @relation(fields: [userId], references: [id])
-  companyName    String
+  id              String   @id @default(cuid())
+  userId          String
+  companyName     String
   responsableName String
-  phone          String
-  address        String
-  rc             String
-  nIf            String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  phone           String
+  address         String
+  rc              String
+  nIf             String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Individual {
   id         String   @id @default(cuid())
-  userId     String   @unique
-  user       User     @relation(fields: [userId], references: [id])
+  userId     String
   fullName   String
   nationalId String
   phone      String
@@ -68,59 +43,87 @@ model Individual {
 }
 
 model Truck {
-  id         String       @id @default(cuid())
-  carrier    String
-  driverId   String
-  location   String
-  status     TruckStatus
-  capacity   String
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-
-  orders     Order[]
-  tracking   Tracking[]
+  id        String     @id @default(cuid())
+  carrier   String
+  driverId  String
+  location  String
+  status    String
+  capacity  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  orders    Order[]
+  tracking  Tracking[]
 }
 
 model Order {
-  id            String     @id @default(cuid())
-  truckId       String
-  customerId    String
-  shipment_range String
-  pickup_loc    String
-  delivery_loc  String
-  width         Decimal    @db.Decimal(10, 2)
-  height        Decimal    @db.Decimal(10, 2)
-  weight        Decimal    @db.Decimal(10, 2)
-  quantity      Int
-  shipment_info String
-  shipment_note String?
-  price         Decimal    @db.Decimal(10, 2)
-  pickup_date   DateTime
-  delivery_date DateTime
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  truck         Truck      @relation(fields: [truckId], references: [id])
-  customer      User       @relation(fields: [customerId], references: [id])
-  tracking      Tracking?
-  payment       Payment?
+  id               String      @id @default(cuid())
+  truckId          String
+  customerId       String
+  pickup_loc       String
+  delivery_loc     String
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  delivery_date    DateTime
+  height           Decimal
+  pickup_date      DateTime
+  quantity         Int
+  shipment_info    String
+  shipment_note    String?
+  shipment_range   String
+  width            Decimal
+  status           OrderStatus @default(PENDING)
+  weight           Decimal
+  price            Decimal
+  coverageAmount   Decimal?
+  insurance_amount Decimal?
+  customer         User        @relation(fields: [customerId], references: [id])
+  truck            Truck       @relation(fields: [truckId], references: [id])
+  payment          Payment?
+  tracking         Tracking?
 }
 
 model Tracking {
-  id        String         @id @default(cuid())
-  orderId   String         @unique
-  location  String
-  status    TrackingStatus
-  date      DateTime
-  truckId   String
-  order     Order          @relation(fields: [orderId], references: [id])
-  truck     Truck          @relation(fields: [truckId], references: [id])
+  id       String         @id @default(cuid())
+  orderId  String         @unique
+  location String
+  date     DateTime
+  truckId  String
+  status   TrackingStatus
+  order    Order          @relation(fields: [orderId], references: [id])
+  truck    Truck          @relation(fields: [truckId], references: [id])
 }
 
 model Payment {
-  id        String   @id @default(cuid())
-  orderId   String   @unique
-  amount    String
-  date      DateTime
-  status    String
-  order     Order    @relation(fields: [orderId], references: [id])
+  id      String   @id @default(cuid())
+  orderId String   @unique
+  date    DateTime
+  status  String
+  amount  Decimal
+  order   Order    @relation(fields: [orderId], references: [id])
+}
+
+model Notification {
+  id        String   @id
+  userId    String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id])
+}
+
+enum TrackingStatus {
+  PICKED_UP
+  IN_TRANSIT
+  DELAYED
+  DELIVERED
+}
+
+enum OrderStatus {
+  PENDING
+  ASSIGNED
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+  ON_THE_ROAD
+  LOADING
 }

@@ -21,7 +21,6 @@ async function signUp(req,res) {
                 email:email,
                 password:hashedPassword,
                 userType:userType.toUpperCase(),
-                role: role ? role.toUpperCase() : 'USER',
             }
         })
             if(userType === 'Company'){
@@ -191,5 +190,51 @@ async function getUserProfile(req,res) {
     }
     }
 
+//CANCELED DELELVREY 
+async function getCanceledInsurances(req, res) {
+    try {
+        const { search, sort = 'createdAt', order = 'desc', limit = 10, page = 1 } = req.query;
 
-module.exports = {signUp,login,logOut,forgetPassword,resetPassword,getUserProfile,getAllUsers};
+        const query = {
+            customerId: req.user.id,
+            status: 'CANCELLED'
+        };
+
+        if (search) {
+            query.delivery_loc = {
+                contains: search,
+                mode: 'insensitive'
+            };
+        }
+
+        const insurances = await prisma.order.findMany({
+            where: query,
+            orderBy: {
+                [sort]: order
+            },
+            skip: (Number(page) - 1) * Number(limit),
+            take: Number(limit),
+            include: {
+                customer: {
+                    select: {
+                        email: true
+                    }
+                }
+            }
+        });
+
+        const total = await prisma.order.count({ where: query });
+
+        res.json({
+            data: insurances,
+            total,
+            page: Number(page),
+            pages: Math.ceil(total / Number(limit))
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
+
+module.exports = {signUp,login,logOut,forgetPassword,resetPassword,getUserProfile,getAllUsers,getCanceledInsurances};

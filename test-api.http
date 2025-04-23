@@ -1,0 +1,116 @@
+### Start Server First
+// Run this command in terminal before testing:
+// node app.js
+
+### Company Registration
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "email": "company@example.com",
+  "password": "password123",
+  "userType": "Company",
+  "phone": "1234567890",
+  "companyName": "Test Company",
+  "address": "123 Business St",
+  "rc": "RC12345",
+  "nIf": "NIF12345",
+  "responsableName": "John Doe"
+}
+
+### Individual Registration
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "email": "individual@example.com",
+  "password": "password123",
+  "userType": "Individual",
+  "phone": "0987654321",
+  "fullName": "Jane Smith",
+  "nationalId": "ID12345678",
+  "address": "456 Home Ave"
+}
+
+### User Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+### Get User Profile
+GET http://localhost:3000/auth/profile/1
+Authorization: Bearer <token>
+
+### Get All Users
+GET http://localhost:3000/auth/users
+Authorization: Bearer <token>
+
+### Get Canceled Insurances
+GET http://localhost:3000/auth/canceled-insurances
+Authorization: Bearer <token>
+
+### User Logout
+GET http://localhost:3000/auth/logout
+Authorization: Bearer <token>
+
+### Forget Password
+POST http://localhost:3000/auth/forgetPassword
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com"
+}
+
+### Reset Password
+POST http://localhost:3000/auth/reset_password/<token>
+Content-Type: application/json
+
+{
+  "newPassword": "newpassword123"
+}
+
+### Get User Deliveries
+GET http://localhost:3000/api/deliveries
+Authorization: Bearer <token>
+
+### Get Delivery Details
+GET http://localhost:3000/api/deliveries/1
+Authorization: Bearer <token>
+
+### Get Recent Shipping
+GET http://localhost:3000/api/deliveries/recent
+Authorization: Bearer <token>
+
+### Create New Delivery
+POST http://localhost:3000/api/deliveries
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "departure": "123 Warehouse St",
+  "destination": "456 Retail Ave",
+  "weight": 500,
+  "status": "In Transit",
+  "coverage": 1000,
+  "date_exit": "2023-10-01T08:00:00Z",
+  "date_arrival": "2023-10-02T16:00:00Z",
+  "driver": {
+    "id": 1
+  }
+}
+
+### Get All Notifications
+GET http://localhost:3000/notifications
+Authorization: Bearer <token>
+
+### Mark Notification as Read
+PUT http://localhost:3000/api/notifications/1/read
+Authorization: Bearer <token>
+
+### Delete Notification
+DELETE http://localhost:3000/api/notifications/1
+Authorization: Bearer <token>
