@@ -20,6 +20,14 @@ router.post('/trucks/add', admin.addTruck);
 router.put('/trucks/:id/edit', admin.updateTruck);
 router.delete('/trucks/:id/delete', admin.deleteTruck);
 
+// Drivers
+router.get('/drivers', admin.getDrivers);
+router.get('/drivers/:id', admin.getDriverById);
+router.post('/drivers/add', admin.addDriver);
+router.put('/drivers/:id/edit', admin.updateDriver);
+router.delete('/drivers/:id/delete', admin.deleteDriver);
+
+
 // Orders
 router.get('/orders', admin.getOrders);
 router.get('/orders/:id', admin.getOrderById);

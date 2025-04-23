@@ -297,3 +297,109 @@ exports.updatePaymentStatus = async (req, res) => {
 
 
 
+
+exports.getDrivers = async (req, res) => {
+  try {
+    const drivers = await prisma.driver.findMany();
+    console.log(drivers);
+
+    if (!drivers || drivers.length === 0) {
+      return res.status(404).json({ message: 'No drivers found' });
+    }
+    res.json(drivers);
+  } catch (error) {
+    console.error('Error fetching drivers:', error);
+    res.status(500).json({ message: 'Error fetching drivers', error });
+  }
+};
+
+exports.getDriverById = async (req, res) => {
+  const { id } = req.params;
+  const driver = await prisma.driver.findUnique({ where: { id } });
+  if (!driver) return res.status(404).json({ message: 'Driver not found' });
+  res.json(driver);
+};
+
+exports.addDriver = async (req, res) => {
+  try {
+    const { fullName, license, nationalId, phone, email, licenseExpire } = req.body;
+    const driver = await prisma.driver.create({
+      data: {
+        fullName,
+        license,
+        nationalId,
+        phone,
+        email,
+        licenseExpire: new Date(licenseExpire),
+      },
+    });
+    res.status(201).json(driver);
+  } catch (error) {
+    console.error('Error creating driver:', error);
+    res.status(500).json({ message: 'Error creating driver', error });
+  }
+};
+
+exports.assignDriverToTruck = async (req, res) => {
+  try {
+    const { driverId, truckId } = req.body;
+
+    // Check if driver exists
+    const driver = await prisma.driver.findUnique({ where: { id: driverId } });
+    if (!driver) {
+      return res.status(404).json({ message: 'Driver not found' });
+    }
+
+    // Check if truck exists
+    const truck = await prisma.truck.findUnique({ where: { id: truckId } });
+    if (!truck) {
+      return res.status(404).json({ message: 'Truck not found' });
+    }
+
+    // Assign driver to truck by updating truck's driverId
+    const updatedTruck = await prisma.truck.update({
+      where: { id: truckId },
+      data: { driverId: driverId },
+      include: { driver: true },
+    });
+
+    res.json({ message: 'Driver assigned to truck successfully', truck: updatedTruck });
+  } catch (error) {
+    console.error('Error assigning driver to truck:', error);
+    res.status(500).json({ message: 'Error assigning driver to truck', error });
+  }
+};
+
+exports.updateDriver = async (req, res) => {
+  const { id } = req.params;
+  const { fullName, phone, email
+, password } = req.body;
+  const driver = await prisma.user.update({
+    where: { id },
+    data: {
+      fullName,
+      phone,
+      email,
+      password,
+    },
+  });
+  res.json(driver);
+}
+
+exports.deleteDriver = async (req, res) => {
+  const { id } = req.params;
+  await prisma.user.delete({ where: { id } });
+  res.json({ message: 'Driver deleted' });
+};
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      where: { userType: 'USER' },
+    });
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Error fetching users', error });
+  }
+};
