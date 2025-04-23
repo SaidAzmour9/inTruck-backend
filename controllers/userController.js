@@ -180,7 +180,15 @@ async function logOut(req,res) {
 async function getUserProfile(req,res) {
     try {
         const { id } = req.params;
-        const user = await prisma.user.findUnique({ where: { id } });
+        
+        const user = await prisma.user.findUnique({
+             where: { id },
+                include: {
+                    individual: true,
+                    company: true,
+                },
+        
+        });
         if (!user) {
             return res.status(404).json({ message: 'User not found' })
         }
