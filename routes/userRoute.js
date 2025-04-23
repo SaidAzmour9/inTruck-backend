@@ -8,7 +8,7 @@ const auth = require('../middlewares/auth')
 router.post('/register',validation.validateUser,errorValidatorHandler,signUp);
 router.post('/login',validation.validateLogin,errorValidatorHandler,login)
 //get user profile
-router.get('/profile/:id',auth,getUserProfile);
+router.get('/profile', auth, getUserProfile); // ✅ no ID in URL
 // admin get all users
 router.get('/users',auth,getAllUsers);
 // router.put('/admin/user/role/:id',auth,updateUserRole);

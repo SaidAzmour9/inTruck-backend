@@ -175,31 +175,30 @@ async function logOut(req,res) {
     }
 }
 
-
-// getUserProfile
-async function getUserProfile(req,res) {
+// get user profile
+async function getUserProfile(req, res) {
     try {
-        const { id } = req.params;
-        
-        const user = await prisma.user.findUnique({
-             where: { id },
-                include: {
-                    individual: true,
-                    company: true,
-                },
-        
-        });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' })
-        }
-        res.status(200).json({ user });
+      const userId = req.user.id; // ✅ set by your auth middleware
+  
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          individual: true,
+          company: true,
+        },
+      });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.status(200).json({ user });
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
     }
-    catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
-    }
-
+  }
+  
 
 
 
