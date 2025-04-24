@@ -10,13 +10,15 @@ const adminRoute = require('./routes/adminRoute')
 const dashboardRoute = require('./routes/dashboardRoute')
 const cors = require('cors');
 
+app.set('trust proxy', 1); 
+
+
 const limiter = rateLimit({
-	windowMs: 15 * 60 * 1000,
-	limit: 100, 
-	standardHeaders: 'draft-8', 
-	legacyHeaders: false, 
-})
-app.use(limiter)
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limite chaque IP à 100 requêtes par fenêtre
+});
+
+app.use(limiter);
 
 app.use(cors({
     origin: 'http://localhost:5173',
