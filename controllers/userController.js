@@ -57,7 +57,7 @@ async function signUp(req,res) {
     }
 }
 
-async function login(req,res) {
+async function login(req, res) {
     try {
         const { email, password } = req.body;
         const user = await prisma.user.findUnique({ 
@@ -74,16 +74,10 @@ async function login(req,res) {
         if (!isValidPassword) {
             return res.status(400).json({ message: 'Invalid password' });
         }
-        const token = jwt.sign({ userId: user.id,role: user.role }, process.env.JWT_SECRET_KEY, {
+        const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET_KEY, {
             expiresIn: '1h',
         });
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: true,            // ✅ must be true on Railway (HTTPS)
-            sameSite: 'None',        // ✅ required for cross-origin
-            maxAge: 24 * 60 * 60 * 1000 // 1 day
-          });
-        console.log("true")
+
         // Prepare user data to send
         const userData = {
             id: user.id,
@@ -93,9 +87,9 @@ async function login(req,res) {
             fullName: user.individual ? user.individual.fullName : (user.company ? user.company.companyName : ''),
             phone: user.individual ? user.individual.phone : (user.company ? user.company.phone : ''),
         };
-        res.status(200).json({ token, user: userData });
 
-        
+        // Send token and user data to the client
+        res.status(200).json({ token, user: userData });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -176,19 +170,13 @@ async function getAllUsers(req,res) {
     }
     }
 
-
-
-
-
-async function logOut(req,res) {
+async function logOut(req, res) {
     try {
-        res.clearCookie('token');
+        // Inform the client to clear the token from localStorage
         res.status(200).json({ message: 'Logged out successfully' });
-        
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
-        
     }
 }
 

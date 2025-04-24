@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const port = process.env.PORT || 3000; 
 const rateLimit = require('express-rate-limit');
@@ -39,7 +38,6 @@ app.use(cors({
 
 
 app.use(express.json());
-app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 
