@@ -18,10 +18,7 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://intruck-frontend.vercel.app'
-];
+const allowedOrigins = ['http://localhost:5173'];
 
 app.use(cors({
   origin: function (origin, callback) {
