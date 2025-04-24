@@ -185,7 +185,9 @@ async function getUserProfile(req, res) {
       }
   
       const userId = req.user.id;
+      console.log("Fetching user with ID:", userId); // سجل للمتابعة
   
+      // استعلام المستخدم بناءً على userId
       const user = await prisma.user.findUnique({
         where: { id: userId },
         include: {
@@ -194,10 +196,12 @@ async function getUserProfile(req, res) {
         },
       });
   
+      // في حال عدم العثور على المستخدم
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
   
+      // إرسال استجابة ناجحة مع بيانات المستخدم
       res.status(200).json({ user });
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -205,7 +209,6 @@ async function getUserProfile(req, res) {
     }
   }
   
-
 
 
 module.exports = {signUp,login,logOut,forgetPassword,resetPassword,getUserProfile,getAllUsers};
