@@ -9,12 +9,16 @@ const auth = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    req.user = decoded; // decoded = { id, email, role, etc. }
+    req.user = decoded; // decoded = { userId, role, etc. }
+
+    console.log('Decoded user:', req.user); // سجل بيانات المستخدم هنا
+
     next();
   } catch (error) {
-    return res.status(403).json({ message: 'Invalid or expired token' }); // use 403 for invalid auth
+    return res.status(403).json({ message: 'Invalid or expired token' });
   }
 };
+
 
 module.exports = auth;
 
