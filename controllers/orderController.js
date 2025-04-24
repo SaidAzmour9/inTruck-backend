@@ -35,7 +35,7 @@ async function createOrder(req, res) {
         quantity,
         shipment_info,
         shipment_note,
-        price,
+        price:Number(price),
         pickup_date: new Date(pickup_date),
         // Tracking without truck
         tracking: {
