@@ -68,8 +68,6 @@ exports.getDashboard = async (req, res) => {
     res.status(500).json({ message: 'Error loading dashboard', error });
   }
 };
-
-
 //  Users
 exports.getUsers = async (req, res) => {
   const users = await prisma.user.findMany();
@@ -134,7 +132,6 @@ exports.addTruck = async (req, res) => {
     res.status(400).json({ message: 'Invalid input', error });
   }
 };
-
 
 exports.updateTruck = async (req, res) => {
   const { id } = req.params;
@@ -253,11 +250,6 @@ exports.updateOrderStatus = async (req, res) => {
   }
 };
 
-
-
-
-
-
 exports.deleteOrder = async (req, res) => {
   const { id } = req.params;
   await prisma.order.delete({ where: { id } });
@@ -294,9 +286,6 @@ exports.updatePaymentStatus = async (req, res) => {
   const payment = await prisma.payment.update({ where: { id }, data: { status } });
   res.json(payment);
 };
-
-
-
 
 exports.getDrivers = async (req, res) => {
   try {
