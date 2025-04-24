@@ -111,7 +111,7 @@ async function forgetPassword(req, res) {
             data: { resetToken },
         });
 
-        const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`; // Dynamically use the FRONTEND_URL
+        const resetLink = `http://localhost:5173/reset-password/${resetToken}`; // Dynamically use the FRONTEND_URL
         const info = await transporter.sendMail({
             from: process.env.MAIL_USER,
             to: email,
