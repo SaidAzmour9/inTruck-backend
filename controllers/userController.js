@@ -60,7 +60,13 @@ async function signUp(req,res) {
 async function login(req,res) {
     try {
         const { email, password } = req.body;
-        const user = await prisma.user.findUnique({ where: { email } });
+        const user = await prisma.user.findUnique({ 
+            where: { email },
+            include: {
+                individual: true,
+                company: true,
+            }
+        });
         if (!user) {
             return res.status(400).json({ message: 'Email not found' });
         }
@@ -78,7 +84,16 @@ async function login(req,res) {
             maxAge: 24 * 60 * 60 * 1000 // 1 day
           });
         console.log("true")
-        res.status(200).json({ token, userId: user.id });
+        // Prepare user data to send
+        const userData = {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            userType: user.userType,
+            fullName: user.individual ? user.individual.fullName : (user.company ? user.company.companyName : ''),
+            phone: user.individual ? user.individual.phone : (user.company ? user.company.phone : ''),
+        };
+        res.status(200).json({ token, user: userData });
 
         
     } catch (error) {
