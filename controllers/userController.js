@@ -77,7 +77,7 @@ async function login(req,res) {
             sameSite: 'None',        // ✅ required for cross-origin
             maxAge: 24 * 60 * 60 * 1000 // 1 day
           });
-          
+        console.log("true")
         res.status(200).json({ token, userId: user.id });
 
         
