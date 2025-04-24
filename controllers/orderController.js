@@ -48,7 +48,7 @@ async function createOrder(req, res) {
         payment: {
           create: {
             paymentMethod: payment_method,
-            amount: price.toString(),
+            amount: price,
             date: new Date(),
             status: payment_method === 'cash_on_delivery' ? 'unpaid' : 'pending'
           }
