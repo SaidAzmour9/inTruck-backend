@@ -180,7 +180,11 @@ async function logOut(req,res) {
 // get user profile
 async function getUserProfile(req, res) {
     try {
-      const userId = req.user.id; // ✅ set by your auth middleware
+      if (!req.user || !req.user.id) {
+        return res.status(400).json({ message: 'User ID is missing from request' });
+      }
+  
+      const userId = req.user.id;
   
       const user = await prisma.user.findUnique({
         where: { id: userId },
