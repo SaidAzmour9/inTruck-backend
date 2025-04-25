@@ -1,4 +1,3 @@
-
 // user controller
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -88,8 +87,8 @@ async function login(req, res) {
             email: user.email,
             role: user.role,
             userType: user.userType,
-            fullName: user.individual ? user.individual.fullName : (user.company ? user.company.companyName : ''),
-            phone: user.individual ? user.individual.phone : (user.company ? user.company.phone : ''),
+            individual: user.individual || null,
+            company: user.company || null,
         };
 
         res.status(200).json({ token, user: userData });
@@ -177,7 +176,7 @@ async function logOut(req, res) {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
-
+// backend function to get user profile
 async function getUserProfile(req, res) {
     try {
         if (!req.user || !req.user.id) {
