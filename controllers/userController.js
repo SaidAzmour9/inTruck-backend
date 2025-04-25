@@ -81,17 +81,8 @@ async function login(req, res) {
             expiresIn: '1h',
         });
 
-        // Prepare user data to send
-        const userData = {
-            id: user.id,
-            email: user.email,
-            role: user.role,
-            userType: user.userType,
-            individual: user.individual || null,
-            company: user.company || null,
-        };
-
-        res.status(200).json({ token, user: userData });
+        // Include all user data in the response
+        res.status(200).json({ token, user });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
