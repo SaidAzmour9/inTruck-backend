@@ -40,7 +40,7 @@ async function getUserDashboard(req, res) {
     );
 
     const totalOrders = await prisma.order.count({
-      where: { customerId: req.user.id }
+      where: { customerId: userId }
     });
 
     const ordersByStatus = await prisma.tracking.groupBy({
