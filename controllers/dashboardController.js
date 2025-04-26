@@ -46,12 +46,12 @@ async function getUserDashboard(req, res) {
     const ordersByStatus = await prisma.tracking.groupBy({
       by: ['status'],
       where: {
-        order: {
-          customerId: req.user.id
-        }
+      order: {
+        customerId: userId
+      }
       },
       _count: {
-        status: true
+      status: true
       }
     });
 
