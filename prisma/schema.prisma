@@ -104,8 +104,6 @@ model Order {
   customerId    String
   shipment_range String
   pickup_loc    String
-  delivery_loc  String
-  pickup_city   String
   delivery_city String
   width         Decimal    @db.Decimal(10, 2)
   height        Decimal    @db.Decimal(10, 2)
