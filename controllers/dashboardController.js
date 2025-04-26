@@ -3,9 +3,7 @@ const prisma = new PrismaClient()
 
 async function getUserDashboard(req, res) {
   try {
-    console.error("rr")
     const userId = req.user.userId;
-    console.error(userId)
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -14,12 +12,11 @@ async function getUserDashboard(req, res) {
       }
       
     });
-    console.error(user)
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    console.error("ee")
+    console.log("ee")
 
     const lastOrders = await prisma.order.findMany({
       where: { customerId: req.user.id },
@@ -43,18 +40,18 @@ async function getUserDashboard(req, res) {
     );
 
     const totalOrders = await prisma.order.count({
-      where: { customerId: userId }
+      where: { customerId: req.user.id }
     });
 
     const ordersByStatus = await prisma.tracking.groupBy({
       by: ['status'],
       where: {
-      order: {
-        customerId: userId
-      }
+        order: {
+          customerId: req.user.id
+        }
       },
       _count: {
-      status: true
+        status: true
       }
     });
 
