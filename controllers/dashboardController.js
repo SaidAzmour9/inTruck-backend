@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient()
 
+
 async function getUserDashboard(req, res) {
   try {
     const userId = req.user.userId;
@@ -78,7 +79,6 @@ async function getUserDashboard(req, res) {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
-
 //getTrackingInfo get all oders by userId 
 async function getTrackingInfo(req, res) {
   try {
