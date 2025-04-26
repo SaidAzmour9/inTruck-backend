@@ -6,15 +6,16 @@ const validation = {
         check("password")
           .isLength({ min: 8 })
           .withMessage("Password must be at least 8 characters"),
-        check("phone")
-          .matches(/^\+?\d{10,15}$/)
-          .withMessage("Phone number must be between 10 and 15 digits"),
         check("userType")
           .isIn(["Individual", "Company"])
           .withMessage("User type must be 'Individual' or 'Company'"),
         check("address").notEmpty().withMessage("Address is required"),
       
         // Company-specific fields
+        check("phone")
+          .if(body("userType").equals("Company"))
+          .matches(/^\+?\d{10,15}$/)
+          .withMessage("Phone number must be between 10 and 15 digits"),
         check("companyName")
           .if(body("userType").equals("Company"))
           .notEmpty()
@@ -33,6 +34,10 @@ const validation = {
           .withMessage("Responsible name must be a string"),
       
         // Individual-specific fields
+        check("phone")
+          .if(body("userType").equals("Individual"))
+          .matches(/^\+?\d{10,15}$/)
+          .withMessage("Phone number must be between 10 and 15 digits"),
         check("fullName")
           .if(body("userType").equals("Individual"))
           .notEmpty()
