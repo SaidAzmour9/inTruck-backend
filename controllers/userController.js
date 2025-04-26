@@ -26,8 +26,8 @@ async function signUp(req, res) {
         });
 
         
-        if (userType === 'ADMIN') {
-            return res.status(201).json({ message: 'Admin account created successfully' });
+        if (userType.toUpperCase() === 'ADMIN') {
+            return res.status(201).json({ message: 'Admin account created successfully', user: newUser });
         }
 
         if (userType === 'Company') {
