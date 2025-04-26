@@ -42,15 +42,6 @@ async function getUserDashboard(req, res) {
     const totalOrders = await prisma.order.count({
       where: { customerId: req.user.id }
     });
-    const canceledOrders = await prisma.order.count({
-      where: {
-        customerId: req.user.id,
-        tracking: {
-          status: 'CANCELED'
-        }
-      }
-    });
-    
 
     const ordersByStatus = await prisma.tracking.groupBy({
       by: ['status'],
@@ -77,7 +68,6 @@ async function getUserDashboard(req, res) {
       lastDelivered,
       recentShipped,
       lastOrders,
-      canceledOrders,
       totalOrders,
       statusCounts,
       statusPercentages
