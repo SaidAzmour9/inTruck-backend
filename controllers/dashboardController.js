@@ -3,9 +3,9 @@ const prisma = new PrismaClient()
 
 async function getUserDashboard(req, res) {
   try {
-    console.log("rr")
+    console.error("rr")
     const userId = req.user.userId;
-    console.log(userId)
+    console.error(userId)
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -14,12 +14,12 @@ async function getUserDashboard(req, res) {
       }
       
     });
-    console.log(user)
+    console.error(user)
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    console.log("ee")
+    console.error("ee")
 
     const lastOrders = await prisma.order.findMany({
       where: { customerId: req.user.id },
