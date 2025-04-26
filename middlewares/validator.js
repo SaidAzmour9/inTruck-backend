@@ -9,7 +9,6 @@ const validation = {
         check("userType")
           .isIn(["Individual", "Company"])
           .withMessage("User type must be 'Individual' or 'Company'"),
-        check("address").notEmpty().withMessage("Address is required"),
       
         // Company-specific fields
         check("phone")
@@ -32,6 +31,10 @@ const validation = {
           .if(body("userType").equals("Company"))
           .isString()
           .withMessage("Responsible name must be a string"),
+        check("address")
+          .if(body("userType").equals("Company"))
+          .notEmpty()
+          .withMessage("Address is required"),
       
         // Individual-specific fields
         check("phone")
@@ -46,6 +49,10 @@ const validation = {
           .if(body("userType").equals("Individual"))
           .notEmpty()
           .withMessage("National ID is required"),
+        check("address")
+          .if(body("userType").equals("Individual"))
+          .notEmpty()
+          .withMessage("Address is required"),
       ],
     validateLogin: [
         check('email')
