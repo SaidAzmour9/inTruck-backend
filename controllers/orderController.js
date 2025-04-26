@@ -29,8 +29,6 @@ async function createOrder(req, res) {
         shipment_range,
         pickup_loc,
         delivery_loc,
-        pickup_city,
-        delivery_city,
         width,
         height,
         weight,
