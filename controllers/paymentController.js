@@ -1,5 +1,6 @@
 // paymentController.js
-const stripe = require('stripe')(process.env.STRIPE_API_KEY);
+console.log("Stripe API Key:", process.env.STRIPE_API_KEY);
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
