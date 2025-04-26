@@ -31,10 +31,6 @@ async function getUserDashboard(req, res) {
       take: 3
     });
 
-    if (!lastOrders || lastOrders.length === 0) {
-      return res.status(404).json({ message: 'No recent orders found' });
-    }
-
     const lastDelivered = lastOrders.find(
       order => order.tracking?.status === 'DELIVERED'
     );
