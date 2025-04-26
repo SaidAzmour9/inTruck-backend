@@ -39,6 +39,11 @@ async function getUserDashboard(req, res) {
       order => order.tracking?.status === 'IN_TRANSIT'
     );
 
+    //orer cancelled 
+    const canceledOrders = lastOrders.filter(
+      order => order.tracking?.status === 'CANCELED'
+    );
+
     const totalOrders = await prisma.order.count({
       where: { customerId: req.user.id }
     });
@@ -68,6 +73,7 @@ async function getUserDashboard(req, res) {
       lastDelivered,
       recentShipped,
       lastOrders,
+      canceledOrders,
       totalOrders,
       statusCounts,
       statusPercentages
