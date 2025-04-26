@@ -29,6 +29,8 @@ async function createOrder(req, res) {
         shipment_range,
         pickup_loc,
         delivery_loc,
+        pickup_city,
+        delivery_city,
         width,
         height,
         weight,
@@ -88,6 +90,55 @@ async function createOrder(req, res) {
   }
 }
 
+//get order by id
+async function getOrderById(req, res) {
+  try {
+    const orderId = req.params.id;
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        tracking: true,
+        truck: true,
+        payment: true
+      }
+    });
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    res.status(200).json({ order });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+}
+
+//get all orders by userId
+async function getAllOrdersByUserId(req, res) {
+  try {
+    const userId = req.user.userId;
+    const orders = await prisma.order.findMany({
+      where: { customerId: userId },
+      include: {
+        tracking: true,
+        truck: true,
+        payment: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+    if (!orders) {
+      return res.status(404).json({ message: 'No orders found' });
+    }
+    res.status(200).json({ orders });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+}
+
 module.exports = {
-  createOrder
+  createOrder,
+  getOrderById,
+  getAllOrdersByUserId
 };
