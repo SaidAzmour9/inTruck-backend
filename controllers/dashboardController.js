@@ -19,7 +19,7 @@ async function getUserDashboard(req, res) {
     console.log("ee")
 
     const lastOrders = await prisma.order.findMany({
-      where: { customerId: req.user.userId },
+      where: { customerId: req.user.id },
       include: {
         tracking: true,
         truck: true,
