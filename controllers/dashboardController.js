@@ -19,17 +19,21 @@ async function getUserDashboard(req, res) {
     console.log("ee")
 
     const lastOrders = await prisma.order.findMany({
-      where: { customerId: req.user.id },
+      where: { customerId: req.user.userId },
       include: {
-        tracking: true,
-        truck: true,
-        payment: true
+      tracking: true,
+      truck: true,
+      payment: true
       },
       orderBy: {
-        createdAt: 'desc'
+      createdAt: 'desc'
       },
       take: 3
     });
+
+    if (!lastOrders || lastOrders.length === 0) {
+      return res.status(404).json({ message: 'No recent orders found' });
+    }
 
     const lastDelivered = lastOrders.find(
       order => order.tracking?.status === 'DELIVERED'
