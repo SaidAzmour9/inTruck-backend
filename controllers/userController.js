@@ -176,7 +176,7 @@ async function logOut(req, res) {
 async function getUserProfile(req, res) {
     try {
         if (!req.user || !req.user.id) {
-            return res.status(400).json({ message: 'User ID is missing from request' , user: req.user});
+            return res.status(400).json({ message: 'User ID is missing from request' });
         }
 
         const userId = req.user.id;
