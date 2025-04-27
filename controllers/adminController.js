@@ -259,6 +259,37 @@ exports.deleteOrder = async (req, res) => {
 
 
 
+//getAvailableDrivers
+exports.getAvailableDrivers = async (req, res) => {
+  try {
+    const availableDrivers = await prisma.driver.findMany({
+      where: {
+        truck: null,
+      },
+    });
+    res.json(availableDrivers);
+  }
+  catch (error) {
+    console.error('Error fetching available drivers:', error);
+    res.status(500).json({ message: 'Error fetching available drivers', error });
+  }
+};
+
+//get available trucks
+exports.getAvailableTrucks = async (req, res) => {
+  try {
+    const availableTrucks = await prisma.truck.findMany({
+      where: {
+        status: 'AVAILABLE',
+      },
+    });
+    res.json(availableTrucks);
+  }
+  catch (error) {
+    console.error('Error fetching available trucks:', error);
+    res.status(500).json({ message: 'Error fetching available trucks', error });
+  }
+};
 
 
 
