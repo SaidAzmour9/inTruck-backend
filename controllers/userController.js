@@ -175,11 +175,18 @@ async function logOut(req, res) {
 
 async function getUserProfile(req, res) {
     try {
-        if (!req.user || !req.user.id) {
+        // Get user ID either from the authenticated user object or query parameter
+        let userId = req.user?.id;
+        
+        // If not found in req.user, check query parameters
+        if (!userId) {
+            userId = req.query.userId;
+        }
+        
+        if (!userId) {
             return res.status(400).json({ message: 'User ID is missing from request' });
         }
 
-        const userId = req.user.id;
         const user = await prisma.user.findUnique({
             where: { id: userId },
             include: {
