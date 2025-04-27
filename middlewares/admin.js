@@ -7,9 +7,7 @@ const isAdmin = (req, res, next) => {
 
     // Check if user has 'ADMIN' role
     if (user.role !== 'ADMIN') {
-        console.log('User role:', user.role); // Log the user role for debugging
-        console.log('User ID:', user.id); // Log the user ID for debugging
-        console.log('User:', user); // Log the entire user object for debugging  
+        
         return res.status(403).json({ message: "Forbidden: Admins only." });
     }
   

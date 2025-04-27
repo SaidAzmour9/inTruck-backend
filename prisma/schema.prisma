@@ -92,6 +92,7 @@ model Driver {
   nationalId  String
   phone       String
   email      String
+  
   licenseExpire DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

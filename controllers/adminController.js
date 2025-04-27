@@ -31,13 +31,12 @@ exports.getDashboard = async (req, res) => {
     }, 0);
     
 
-    // Get available drivers
-    const availableDrivers = await prisma.user.count({
+    // Get available drivers truck null
+    const availableDrivers = await prisma.driver.count({
       where: {
-        userType: 'DRIVER',
-      }
+        truck: null,
+      },
     });
-
     // Get available trucks
     const activeTrucks = await prisma.truck.count({
       where: {
@@ -257,6 +256,13 @@ exports.deleteOrder = async (req, res) => {
 };
 
 //  Tracking
+
+
+
+
+
+
+
 exports.getAllTracking = async (req, res) => {
   const tracking = await prisma.tracking.findMany({ include: { order: true } });
   res.json(tracking);
