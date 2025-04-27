@@ -10,7 +10,7 @@ router.post('/register', validation.validateUser, errorValidatorHandler, signUp)
 router.post('/login', validation.validateLogin, errorValidatorHandler, login);
 router.get('/checkAuthStatus', auth, checkAuthStatus); 
 router.get('/profile', auth2, getUserProfile); // Protected route for user profile
-router.get('/users', auth, getAllUsers);
+router.get('/users', auth2, getAllUsers);
 router.get('/logout', auth, logOut);
 router.post('/forgetPassword', validation.validateForgotPassword, forgetPassword);
 router.post('/reset_password/:token', validation.validateResetPassword, resetPassword);
