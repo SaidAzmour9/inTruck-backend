@@ -172,9 +172,10 @@ async function logOut(req, res) {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
-// backend function to get user profile
+
 async function getUserProfile(req, res) {
     try {
+        comsole.error('User profile request:', req.user);
         if (!req.user || !req.user.id) {
             return res.status(400).json({ message: 'User ID is missing from request' });
         }
