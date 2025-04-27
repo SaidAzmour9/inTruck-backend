@@ -19,6 +19,10 @@ router.get('/trucks/:id', admin.getTruckById);
 router.post('/trucks/add', admin.addTruck);
 router.put('/trucks/:id/edit', admin.updateTruck);
 router.delete('/trucks/:id/delete', admin.deleteTruck);
+//assignDriverToTruck
+router.put('/trucks/:id/assign-driver', admin.assignDriverToTruck);
+//get available trucks
+router.get('/trucks/available', admin.getAvailableTrucks);
 
 // Drivers
 router.get('/drivers', admin.getDrivers);
@@ -26,6 +30,8 @@ router.get('/drivers/:id', admin.getDriverById);
 router.post('/drivers/add', admin.addDriver);
 router.put('/drivers/:id/edit', admin.updateDriver);
 router.delete('/drivers/:id/delete', admin.deleteDriver);
+//get available drivers
+router.get('/drivers/available', admin.getAvailableDrivers);
 
 
 // Orders
