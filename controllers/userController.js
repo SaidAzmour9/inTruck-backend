@@ -172,7 +172,7 @@ async function logOut(req, res) {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
-// backend function to get user profile
+
 async function getUserProfile(req, res) {
     try {
         if (!req.user || !req.user.id) {
