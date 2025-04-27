@@ -175,9 +175,8 @@ async function logOut(req, res) {
 
 async function getUserProfile(req, res) {
     try {
-        comsole.error('User profile request:', req.user);
         if (!req.user || !req.user.id) {
-            return res.status(400).json({ message: 'User ID is missing from request' });
+            return res.status(400).json({ message: 'User ID is missing from request' , user: req.user});
         }
 
         const userId = req.user.id;
