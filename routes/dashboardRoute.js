@@ -11,8 +11,8 @@ router.get('/tracking', auth, getTrackingInfo);
 router.get('/deleveries', auth, getDeliveredOrders);
 router.get('/canceled', auth, getCanceledOrders);
 router.post('/newOrder', auth, createOrder);
-router.get('/getAllOrders', auth, getAllOrdersByUserId);
-router.get('/getOrder/:id', auth, getOrderById);
+router.get('/orders', auth, getAllOrdersByUserId);
+router.get('/orders/:id', auth, getOrderById);
 router.post('/distance', auth, CalculDistance);
 
 

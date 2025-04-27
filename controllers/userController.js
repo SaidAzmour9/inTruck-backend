@@ -87,7 +87,7 @@ async function login(req, res) {
         });
 
         // Include all user data in the response
-        res.status(200).json({ token, user });
+        res.status(200).json({ token, user , userId: user.id });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
