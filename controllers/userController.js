@@ -245,9 +245,11 @@ async function updateUserProfile(req, res) {
     try {
       const userId = req.user.id;
       const profileData = req.body;
+  
       if (!profileData) {
-        return res.status(404).json({ message: 'profileData not found' });
+        return res.status(400).json({ message: 'profileData not found' });
       }
+  
       const user = await prisma.user.findUnique({
         where: { id: userId },
       });
@@ -267,28 +269,28 @@ async function updateUserProfile(req, res) {
         },
       });
   
-      // Update company or individual info
-      if (profileData.userType === 'COMPANY') {
+      // Update company or individual info — protect against missing data
+      if (profileData.userType === 'COMPANY' && profileData.company) {
         await prisma.company.updateMany({
           where: { userId },
           data: {
-            companyName: profileData.company.companyName,
-            rc: profileData.company.rc,
-            nIf: profileData.company.nIf,
-            responsableName: profileData.company.responsableName,
-            phone: profileData.company.phone,
-            address: profileData.company.address,
-          }
+            companyName: profileData.company.companyName || '',
+            rc: profileData.company.rc || '',
+            nIf: profileData.company.nIf || '',
+            responsableName: profileData.company.responsableName || '',
+            phone: profileData.company.phone || '',
+            address: profileData.company.address || '',
+          },
         });
-      } else if (profileData.userType === 'INDIVIDUAL') {
+      } else if (profileData.userType === 'INDIVIDUAL' && profileData.individual) {
         await prisma.individual.updateMany({
           where: { userId },
           data: {
-            fullName: profileData.individual.fullName,
-            nationalId: profileData.individual.nationalId,
-            phone: profileData.individual.phone,
-            address: profileData.individual.address,
-          }
+            fullName: profileData.individual.fullName || '',
+            nationalId: profileData.individual.nationalId || '',
+            phone: profileData.individual.phone || '',
+            address: profileData.individual.address || '',
+          },
         });
       }
   
@@ -301,7 +303,8 @@ async function updateUserProfile(req, res) {
       console.error('Error updating profile:', error);
       res.status(500).json({ message: 'Internal Server Error' });
     }
-}
+  }
+  
 
 
 module.exports = { signUp, login, logOut, forgetPassword, resetPassword, checkAuthStatus, getUserProfile, updateUserProfile, getAllUsers };
