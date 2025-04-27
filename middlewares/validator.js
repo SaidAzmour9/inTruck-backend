@@ -141,6 +141,63 @@ const validation = {
 
   ],
     
+  validateUpdateUser: [
+    check("email")
+      .isEmail()
+      .withMessage("Invalid email address"),
+
+    // If userType is Company
+    check("phone")
+      .if(body("userType").equals("Company"))
+      .matches(/^\+?\d{10,15}$/)
+      .withMessage("Phone number must be between 10 and 15 digits"),
+
+    check("companyName")
+      .if(body("userType").equals("Company"))
+      .notEmpty()
+      .withMessage("Company name is required"),
+
+    check("rc")
+      .if(body("userType").equals("Company"))
+      .notEmpty()
+      .withMessage("Commercial registration number (RC) is required"),
+
+    check("nIf")
+      .if(body("userType").equals("Company"))
+      .notEmpty()
+      .withMessage("Tax identification number (NIF) is required"),
+
+    check("responsableName")
+      .if(body("userType").equals("Company"))
+      .isString()
+      .withMessage("Responsible name must be a string"),
+
+    check("address")
+      .if(body("userType").equals("Company"))
+      .notEmpty()
+      .withMessage("Address is required"),
+
+    // If userType is Individual
+    check("phone")
+      .if(body("userType").equals("Individual"))
+      .matches(/^\+?\d{10,15}$/)
+      .withMessage("Phone number must be between 10 and 15 digits"),
+
+    check("fullName")
+      .if(body("userType").equals("Individual"))
+      .notEmpty()
+      .withMessage("Full name is required for individuals"),
+
+    check("nationalId")
+      .if(body("userType").equals("Individual"))
+      .notEmpty()
+      .withMessage("National ID is required"),
+
+    check("address")
+      .if(body("userType").equals("Individual"))
+      .notEmpty()
+      .withMessage("Address is required"),
+  ],
 
   validateForgotPassword: [
     check('email')
