@@ -222,20 +222,24 @@ async function getUserProfile(req, res) {
         return res.status(404).json({ message: 'User not found' });
       }
   
+      // ⚡ Wrap inside { user: {...} }
       return res.status(200).json({
-        userType: user.userType,
-        email: user.email,
-        phone: user.phone,
-        address: user.address,
-        company: user.company || {},
-        individual: user.individual || {},
+        user: {
+          userType: user.userType,
+          email: user.email,
+          phone: user.phone,
+          address: user.address,
+          company: user.company || {},
+          individual: user.individual || {},
+        }
       });
   
     } catch (error) {
       console.error('Error fetching profile:', error);
       res.status(500).json({ message: 'Internal Server Error' });
     }
-}
+  }
+  
 
 async function updateUserProfile(req, res) {
     try {
