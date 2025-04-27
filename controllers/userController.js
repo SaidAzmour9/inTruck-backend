@@ -245,7 +245,9 @@ async function updateUserProfile(req, res) {
     try {
       const userId = req.user.id;
       const profileData = req.body;
-  
+      if (!profileData) {
+        return res.status(404).json({ message: 'profileData not found' });
+      }
       const user = await prisma.user.findUnique({
         where: { id: userId },
       });
