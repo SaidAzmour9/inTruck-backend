@@ -173,7 +173,7 @@ async function logOut(req, res) {
     }
 }
 
-async function getUserProfile(req, res) {
+async function checkAuthStatus(req, res) {
     try {
         // Get user ID either from the authenticated user object or query parameter
         let userId = req.user?.id;
@@ -206,4 +206,97 @@ async function getUserProfile(req, res) {
     }
 }
 
-module.exports = { signUp, login, logOut, forgetPassword, resetPassword, getUserProfile, getAllUsers };
+async function getUserProfile(req, res) {
+    try {
+      // Get user ID from authenticated request
+      const userId = req.user.id;
+      
+      // Find user in database
+      const user = await User.findById(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      
+      // Return user profile data
+      return res.status(200).json({
+        userType: user.userType,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        company: user.company || {},
+        individual: user.individual || {}
+      });
+      
+    } catch (error) {
+        console.error('Error fetching profile:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };
+  
+  async function updateUserProfile(req, res) {
+    try {
+      // Get user ID from authenticated request
+      const userId = req.user.id;
+      const profileData = req.body;
+      
+      // Validate profile data
+      const { isValid, errors } = validateProfileData(profileData);
+      if (!isValid) {
+        return res.status(400).json({ errors });
+      }
+      
+      // Find and update user in database
+      const user = await user.findById(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      
+      // Update user fields
+      user.userType = profileData.userType;
+      user.email = profileData.email;
+      user.phone = profileData.phone;
+      user.address = profileData.address;
+      
+      // Update nested fields based on user type
+      if (profileData.userType === 'COMPANY') {
+        user.company = {
+          companyName: profileData.company.companyName,
+          rc: profileData.company.rc,
+          nIf: profileData.company.nIf,
+          responsableName: profileData.company.responsableName,
+          phone: profileData.company.phone,
+          address: profileData.company.address
+        };
+      } else {
+        user.individual = {
+          fullName: profileData.individual.fullName,
+          nationalId: profileData.individual.nationalId,
+          phone: profileData.individual.phone,
+          address: profileData.individual.address
+        };
+      }
+      
+      // Save updated user to database
+      await user.save();
+      
+      return res.status(200).json({ 
+        message: 'Profile updated successfully',
+        user: {
+          userType: user.userType,
+          email: user.email,
+          phone: user.phone,
+          address: user.address,
+          company: user.company || {},
+          individual: user.individual || {}
+        }
+      });
+      
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };
+
+module.exports = { signUp, login, logOut, forgetPassword, resetPassword, checkAuthStatus, getUserProfile, updateUserProfile, getAllUsers };
