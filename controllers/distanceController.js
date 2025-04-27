@@ -4,8 +4,8 @@ require('dotenv').config();
 const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
 async function CalculDistance(req, res) {
-  const origin = { lat: 33.5731, lng: -7.5898 }
-  const destination = { lat: 34.0209, lng: -6.8416 } 
+  const origin = req.body.origin; // Example: { lat: 34.0209, lng: -6.8416 }
+  const destination = req.body.destination; // Example: { lat: 34.0209, lng: -6.8416 }
 
   if (!origin || !destination) {
     return res.status(400).json({ error: 'Origin and destination are required' });
