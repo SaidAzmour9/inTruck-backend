@@ -1,37 +1,20 @@
-
 const jwt = require('jsonwebtoken');
-const { PrismaClient } = require('@prisma/client');
 
-const prisma = new PrismaClient();
-
-async function auth(req, res, next) {
-  try {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ message: 'Unauthorized: No token provided' });
-    }
-
-    const token = authHeader.split(' ')[1];
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-    });
-
-    if (!user) {
-      return res.status(401).json({ message: 'Unauthorized: User not found' });
-    }
-
-    req.user = user;
-    next();
-
-  } catch (error) {
-    console.error('Auth error:', error);
-    return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+const auth = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1]; // Extract token from 'Bearer <token>'
+  if (!token) {
+    return res.status(400).json({ message: 'Token is required' });
   }
-}
 
+  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: 'Invalid or expired token' });
+    }
+    req.user = decoded; // Attach user info to request
+    next(); // Proceed to the next middleware or route handler
+  });
+};
 
 module.exports = auth;
+
+
