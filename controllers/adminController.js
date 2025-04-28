@@ -289,6 +289,10 @@ exports.getAvailableTrucks = async (req, res) => {
     const availableTrucks = await prisma.truck.findMany({
       where: { status: 'AVAILABLE' },
     });
+    console.log('Available trucks:', availableTrucks);
+    if (!availableTrucks || availableTrucks.length === 0) {
+      return res.status(404).json({ message: 'No available trucks found' });
+    }
     res.json(availableTrucks);
   } catch (error) {
     console.error('Error fetching available trucks:', error);
