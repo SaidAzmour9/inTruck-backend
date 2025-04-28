@@ -1,20 +1,19 @@
 // paymentController.js
-console.log("Stripe API Key:", process.env.STRIPE_API_KEY);
+require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_API_KEY);
-
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function createPaymentIntent(amount) {
     try {
-        const roundedAmount = Math.round(amount * 100);
-        if (!roundedAmount || roundedAmount < 50) {
-            throw new Error('Invalid amount. Amount must be at least $0.50 USD.');
+        const roundedAmount = Math.round(amount * 100); // Stripe requires cents
+        if (!roundedAmount || roundedAmount < 500) { // 500 MAD cents = 5 MAD minimum
+            throw new Error('Invalid amount. Amount must be at least 5 MAD.');
         }
 
         const paymentIntent = await stripe.paymentIntents.create({
             amount: roundedAmount,
-            currency: 'usd',
+            currency: 'mad', // Moroccan Dirham currency
             payment_method_types: ['card'],
         });
 
@@ -24,7 +23,6 @@ async function createPaymentIntent(amount) {
     }
 }
 
-// This is still used as a route if needed
 async function createPaymentIntentHandler(req, res) {
     try {
         const { amount } = req.body;
@@ -50,12 +48,10 @@ async function handleWebhook(req, res) {
 
     switch (event.type) {
         case 'payment_intent.succeeded':
-            const paymentIntent = event.data.object;
-            console.log('PaymentIntent was successful!');
+            console.log('PaymentIntent succeeded!');
             break;
         case 'payment_intent.payment_failed':
-            const error = event.data.object;
-            console.log('PaymentIntent failed: ', error);
+            console.log('PaymentIntent failed');
             break;
         default:
             console.log(`Unhandled event type ${event.type}`);
@@ -66,6 +62,6 @@ async function handleWebhook(req, res) {
 
 module.exports = {
     createPaymentIntentHandler,
-    createPaymentIntent, // exported as a helper
+    createPaymentIntent,
     handleWebhook
 };
