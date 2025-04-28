@@ -6,8 +6,8 @@ const prisma = new PrismaClient();
 
 async function createPaymentIntent(amount) {
     try {
-        const roundedAmount = Math.round(amount * 100); // Stripe requires cents
-        if (!roundedAmount || roundedAmount < 500) { // 500 MAD cents = 5 MAD minimum
+        const roundedAmount = Math.round(amount); // Stripe requires cents
+        if (!roundedAmount || roundedAmount < 5) { // 500 MAD cents = 5 MAD minimum
             throw new Error('Invalid amount. Amount must be at least 5 MAD.');
         }
 
