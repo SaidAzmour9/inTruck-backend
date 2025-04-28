@@ -79,7 +79,7 @@ model Truck {
   location      String?
   orders         Order[]
   tracking       Tracking[]
-    driver     Driver?    @relation(fields: [driverId], references: [id])
+  driver     Driver?    @relation(fields: [driverId], references: [id])
   driverId   String?    @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
