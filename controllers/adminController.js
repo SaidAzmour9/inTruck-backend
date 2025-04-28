@@ -265,7 +265,7 @@ exports.deleteOrder = async (req, res) => {
 
 
 //getAvailableDrivers
-exports.getAvailableDrivers = async (req, res) => {
+exports.getDrivers = async (req, res) => {
   try {
     const drivers = await prisma.driver.findMany();
     res.json(drivers);
@@ -276,7 +276,7 @@ exports.getAvailableDrivers = async (req, res) => {
   }
 };
 
-exports.getAvailableTrucks = async (req, res) => {
+exports.getTrucks = async (req, res) => {
   try {
     const trucks = await prisma.truck.findMany();
     res.json(trucks);
