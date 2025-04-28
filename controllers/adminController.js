@@ -267,37 +267,22 @@ exports.deleteOrder = async (req, res) => {
 //getAvailableDrivers
 exports.getAvailableDrivers = async (req, res) => {
   try {
-    const assignedDriverIds = (await prisma.truck.findMany({
-      select: { driverId: true },
-      where: { driverId: { not: null } },
-    })).map(truck => truck.driverId);
-
-    const availableDrivers = await prisma.driver.findMany({
-      where: {
-        id: { notIn: assignedDriverIds },
-      },
-    });
-    res.json(availableDrivers);
+    const drivers = await prisma.driver.findMany();
+    res.json(drivers);
   }
   catch (error) {
-    console.error('Error fetching available drivers:', error);
-    res.status(500).json({ message: 'Error fetching available drivers', error });
+    console.error('Error fetching drivers:', error);
+    res.status(500).json({ message: 'Error fetching drivers', error });
   }
 };
 
 exports.getAvailableTrucks = async (req, res) => {
   try {
-    const availableTrucks = await prisma.truck.findMany({
-      where: { status: 'AVAILABLE' },
-    });
-    console.log('Available trucks:', availableTrucks);
-    if (!availableTrucks || availableTrucks.length === 0) {
-      return res.status(404).json({ message: 'No available trucks found' });
-    }
-    res.json(availableTrucks);
+    const trucks = await prisma.truck.findMany();
+    res.json(trucks);
   } catch (error) {
-    console.error('Error fetching available trucks:', error);
-    res.status(500).json({ message: 'Error fetching available trucks', error });
+    console.error('Error fetching trucks:', error);
+    res.status(500).json({ message: 'Error fetching trucks', error });
   }
 };
 
