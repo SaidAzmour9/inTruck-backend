@@ -173,13 +173,20 @@ async function logOut(req, res) {
     }
 }
 
-async function getUserProfile(req, res) {
+async function checkAuthStatus(req, res) {
     try {
-        if (!req.user || !req.user.id) {
+        // Get user ID either from the authenticated user object or query parameter
+        let userId = req.user?.id;
+        
+        // If not found in req.user, check query parameters
+        if (!userId) {
+            userId = req.query.userId;
+        }
+        
+        if (!userId) {
             return res.status(400).json({ message: 'User ID is missing from request' });
         }
 
-        const userId = req.user.id;
         const user = await prisma.user.findUnique({
             where: { id: userId },
             include: {
@@ -199,4 +206,105 @@ async function getUserProfile(req, res) {
     }
 }
 
-module.exports = { signUp, login, logOut, forgetPassword, resetPassword, getUserProfile, getAllUsers };
+async function getUserProfile(req, res) {
+    try {
+      const userId = req.user.id;
+  
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          company: true,
+          individual: true,
+        }
+      });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // ⚡ Wrap inside { user: {...} }
+      return res.status(200).json({
+        user: {
+          userType: user.userType,
+          email: user.email,
+          phone: user.phone,
+          address: user.address,
+          company: user.company || {},
+          individual: user.individual || {},
+        }
+      });
+  
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  }
+  
+
+async function updateUserProfile(req, res) {
+    try {
+      const userId = req.user.id;
+      const profileData = req.body;
+  
+      if (!profileData) {
+        return res.status(400).json({ message: 'profileData not found' });
+      }
+  
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Update main user fields
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          userType: profileData.userType,
+          email: profileData.email,
+          phone: profileData.phone,
+          address: profileData.address,
+        },
+      });
+  
+      // Update company or individual info — protect against missing data
+      if (profileData.userType === 'COMPANY' && profileData.company) {
+        await prisma.company.updateMany({
+          where: { userId },
+          data: {
+            companyName: profileData.company.companyName || '',
+            rc: profileData.company.rc || '',
+            nIf: profileData.company.nIf || '',
+            responsableName: profileData.company.responsableName || '',
+            phone: profileData.company.phone || '',
+            address: profileData.company.address || '',
+          },
+        });
+      } else if (profileData.userType === 'INDIVIDUAL' && profileData.individual) {
+        await prisma.individual.updateMany({
+          where: { userId },
+          data: {
+            fullName: profileData.individual.fullName || '',
+            nationalId: profileData.individual.nationalId || '',
+            phone: profileData.individual.phone || '',
+            address: profileData.individual.address || '',
+          },
+        });
+      }
+  
+      return res.status(200).json({ 
+        message: 'Profile updated successfully',
+        user: updatedUser
+      });
+  
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  }
+  
+
+
+module.exports = { signUp, login, logOut, forgetPassword, resetPassword, checkAuthStatus, getUserProfile, updateUserProfile, getAllUsers };
