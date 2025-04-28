@@ -380,6 +380,14 @@ exports.assignDriverToTruck = async (req, res) => {
       return res.status(404).json({ message: 'Driver not found' });
     }
 
+    // Check if driver is already assigned to another truck
+    const existingTruckWithDriver = await prisma.truck.findUnique({
+      where: { driverId: driverId },
+    });
+    if (existingTruckWithDriver) {
+      return res.status(400).json({ message: 'Driver is already assigned to another truck' });
+    }
+
     // Check if truck exists
     const truck = await prisma.truck.findUnique({ where: { id: truckId } });
     if (!truck) {
