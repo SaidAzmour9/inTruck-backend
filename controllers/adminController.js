@@ -278,18 +278,17 @@ exports.getAvailableDrivers = async (req, res) => {
 //get available trucks
 exports.getAvailableTrucks = async (req, res) => {
   try {
-    const availableTrucks = await prisma.truck.findMany({
-      where: {
-        status: 'AVAILABLE',
-      },
-    });
+    const trucks = await prisma.truck.findMany();
+    console.log('All trucks:', trucks);
+
+    const availableTrucks = trucks.filter(truck => truck.status === 'AVAILABLE');
     res.json(availableTrucks);
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error fetching available trucks:', error);
     res.status(500).json({ message: 'Error fetching available trucks', error });
   }
 };
+
 
 
 
