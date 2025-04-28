@@ -109,6 +109,7 @@ exports.getTrucks = async (req, res) => {
 exports.getTruckById = async (req, res) => {
   const { id } = req.params;
   const truck = await prisma.truck.findUnique({ where: { id }, include: { driver: true } });
+  if (!truck) return res.status(404).json({ message: 'Truck not found' });
   res.json(truck);
 };
 
