@@ -170,6 +170,12 @@ exports.updateOrderStatus = async (req, res) => {
   const { status, truckNumber, reason } = req.body;
 
   try {
+    // Check if order exists
+    const orderExists = await prisma.order.findUnique({ where: { id } });
+    if (!orderExists) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
     // Mise à jour ou création du tracking
     const existingTracking = await prisma.tracking.findUnique({
       where: { orderId: id },
