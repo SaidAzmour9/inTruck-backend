@@ -203,9 +203,11 @@ exports.updateOrderStatus = async (req, res) => {
     }
 
     if (status === 'IN_TRANSIT') {
+      console.log('updateOrderStatus: truckNumber received:', truckNumber);
       const truck = await prisma.truck.findUnique({
         where: { truckNumber },
       });
+      console.log('updateOrderStatus: truck found:', truck);
 
       if (!truck) {
         return res.status(404).json({ message: 'Truck not found' });
