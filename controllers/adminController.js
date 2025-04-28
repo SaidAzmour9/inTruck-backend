@@ -31,12 +31,16 @@ exports.getDashboard = async (req, res) => {
     }, 0);
     
 
-    // Get available drivers truck null
-    const availableDrivers = await prisma.driver.count({
-      where: {
-        truck: null,
-      },
-    });
+const assignedDriverIds = (await prisma.truck.findMany({
+  select: { driverId: true },
+  where: { driverId: { not: null } },
+})).map(truck => truck.driverId);
+
+const availableDrivers = await prisma.driver.count({
+  where: {
+    id: { notIn: assignedDriverIds },
+  },
+});
     // Get available trucks
     const activeTrucks = await prisma.truck.count({
       where: {
@@ -262,9 +266,14 @@ exports.deleteOrder = async (req, res) => {
 //getAvailableDrivers
 exports.getAvailableDrivers = async (req, res) => {
   try {
+    const assignedDriverIds = (await prisma.truck.findMany({
+      select: { driverId: true },
+      where: { driverId: { not: null } },
+    })).map(truck => truck.driverId);
+
     const availableDrivers = await prisma.driver.findMany({
       where: {
-        truck: null,
+        id: { notIn: assignedDriverIds },
       },
     });
     res.json(availableDrivers);
@@ -275,14 +284,12 @@ exports.getAvailableDrivers = async (req, res) => {
   }
 };
 
-//get available trucks
 exports.getAvailableTrucks = async (req, res) => {
   try {
-    const trucks = await prisma.truck.findMany();
-    console.log('All trucks:', trucks);
-
-    const availableTrucks = trucks.filter(truck => truck.status === 'AVAILABLE');
-    res.json(availableTrucks,trucks);
+    const availableTrucks = await prisma.truck.findMany({
+      where: { status: 'AVAILABLE' },
+    });
+    res.json(availableTrucks);
   } catch (error) {
     console.error('Error fetching available trucks:', error);
     res.status(500).json({ message: 'Error fetching available trucks', error });
