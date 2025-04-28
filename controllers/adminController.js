@@ -217,7 +217,7 @@ exports.updateOrderStatus = async (req, res) => {
       const updatedOrder = await prisma.order.update({
         where: { id },
         data: {
-          truckNumber,
+          truckId: truck.id,
           status,
         },
       });
