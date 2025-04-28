@@ -282,7 +282,7 @@ exports.getAvailableTrucks = async (req, res) => {
     console.log('All trucks:', trucks);
 
     const availableTrucks = trucks.filter(truck => truck.status === 'AVAILABLE');
-    res.json(availableTrucks);
+    res.json(availableTrucks,trucks);
   } catch (error) {
     console.error('Error fetching available trucks:', error);
     res.status(500).json({ message: 'Error fetching available trucks', error });
