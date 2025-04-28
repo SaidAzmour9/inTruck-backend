@@ -431,3 +431,16 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({ message: 'Error fetching users', error });
   }
 };
+
+//get pending orders
+exports.getPendingOrders = async (req, res) => {
+  try {
+    const pendingOrders = await prisma.order.findMany({
+      where: { status: 'PENDING' },
+    });
+    res.json(pendingOrders);
+  } catch (error) {
+    console.error('Error fetching pending orders:', error);
+    res.status(500).json({ message: 'Error fetching pending orders', error });
+  }
+};
