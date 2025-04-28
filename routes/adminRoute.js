@@ -45,6 +45,8 @@ router.delete('/orders/:id/delete', admin.deleteOrder);
 // Tracking
 router.get('/tracking', admin.getAllTracking);
 router.get('/tracking/:orderId', admin.getTrackingByOrder);
+//get all IN_TRANSIT orders
+router.get('/in-transit', admin.getInTransitOrders);
 
 // Payments
 router.get('/payments', admin.getPayments);

@@ -303,6 +303,16 @@ exports.getAllTracking = async (req, res) => {
   res.json(tracking);
 };
 
+//get all IN_TRANSIT orders
+exports.getInTransitOrders = async (req, res) => {
+  const inTransitOrders = await prisma.tracking.findMany({
+    where: { status: 'IN_TRANSIT' },
+    include: { order: true },
+  });
+  res.json(inTransitOrders);
+};
+
+
 exports.getTrackingByOrder = async (req, res) => {
   const { orderId } = req.params;
   const tracking = await prisma.tracking.findMany({ where: { orderId } });
