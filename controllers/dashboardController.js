@@ -130,7 +130,7 @@ async function getDeliveredOrders(req, res) {
       return res.status(404).json({ message: 'No orders found' });
     }
     const deliveredOrders = orders.filter(
-      order => order.tracking?.status === 'DELIVERED'
+      order => order.status === 'DELIVERED'
     );
     if (deliveredOrders.length === 0) {
       return res.status(404).json({ message: 'No delivered orders found' });
@@ -162,7 +162,7 @@ async function getCanceledOrders(req, res) {
       return res.status(404).json({ message: 'No orders found' });
     }
     const canceledOrders = orders.filter(
-      order => order.tracking?.status === 'CANCELED'
+      order => order.status === 'CANCELED'
     );
     if (canceledOrders.length === 0) {
       return res.status(404).json({ message: 'No canceled orders found' });
