@@ -17,4 +17,10 @@ router.post('/forgetPassword', validation.validateForgotPassword, forgetPassword
 router.post('/reset_password/:token', validation.validateResetPassword, resetPassword);
 router.post('/distance', auth, distanceController.CalculDistance); // Protected route for calculating distance
 
+const notificationController = require('../controllers/notificationController');
+
+// Notification routes
+router.get('/notifications', auth, notificationController.getNotificationsByUser);
+router.patch('/notifications/:id/read', auth, notificationController.markNotificationAsRead);
+
 module.exports = router;
