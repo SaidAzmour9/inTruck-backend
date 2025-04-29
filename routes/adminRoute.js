@@ -38,6 +38,11 @@ router.delete('/drivers/:id/delete', admin.deleteDriver);
 router.get('/orders', admin.getOrders);
 //get pending orders
 router.get('/orders/pending', admin.getPendingOrders);
+//get all deliveries orders
+router.get('/orders/delivered', admin.getAllDeliveriesOrders);
+//get all cancelled orders
+router.get('/orders/cancelled', admin.getAllCancelledOrders);
+
 router.get('/orders/:id', admin.getOrderById);
 router.put('/orders/:id/update-status', admin.updateOrderStatus);
 router.delete('/orders/:id/delete', admin.deleteOrder);
