@@ -162,7 +162,7 @@ async function getCanceledOrders(req, res) {
       return res.status(404).json({ message: 'No orders found' });
     }
     const canceledOrders = orders.filter(
-      order => order.status === 'CANCELED'
+      order => order.status === 'CANCELLED'
     );
     if (canceledOrders.length === 0) {
       return res.status(404).json({ message: 'No canceled orders found' });

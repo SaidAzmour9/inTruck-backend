@@ -497,7 +497,7 @@ exports.getAllUsers = async (req, res) => {
 exports.getPendingOrders = async (req, res) => {
   try {
     const pendingOrders = await prisma.order.findMany({
-      where: { status: 'PENDING' },
+      where: { status: 'PENDING'  },
     });
     res.json(pendingOrders);
   } catch (error) {
