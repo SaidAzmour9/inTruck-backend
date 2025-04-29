@@ -192,6 +192,7 @@ exports.updateOrderStatus = async (req, res) => {
 
     // Gérer les cas spécifiques
     if (status === 'DELIVERED') {
+      // Update order
       const updatedOrder = await prisma.order.update({
         where: { id },
         data: {
@@ -199,6 +200,24 @@ exports.updateOrderStatus = async (req, res) => {
           status,
         },
       });
+
+      // Find the truck associated with the order
+      const orderWithTruck = await prisma.order.findUnique({
+        where: { id },
+        select: { truckId: true },
+      });
+
+      if (orderWithTruck && orderWithTruck.truckId) {
+        // Update truck status to AVAILABLE and unassign driver
+        await prisma.truck.update({
+          where: { id: orderWithTruck.truckId },
+          data: {
+            status: 'AVAILABLE',
+            driverId: null,
+          },
+        });
+      }
+
       return res.json({ tracking, updatedOrder });
     }
 
