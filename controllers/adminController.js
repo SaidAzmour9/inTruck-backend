@@ -331,6 +331,24 @@ exports.getInTransitOrders = async (req, res) => {
   res.json(inTransitOrders);
 };
 
+//get all DELIVERED orders
+exports.getAllDeliveriesOrders = async (req, res) => {
+  const deliveredOrders = await prisma.tracking.findMany({
+    where: { status: 'DELIVERED' },
+    include: { order: true },
+  });
+  res.json(deliveredOrders);
+};
+
+//get all CANCELLED orders
+exports.getAllCancelledOrders = async (req, res) => {
+  const cancelledOrders = await prisma.tracking.findMany({
+    where: { status: 'CANCELLED' },
+    include: { order: true },
+  });
+  res.json(cancelledOrders);
+};
+
 
 exports.getTrackingByOrder = async (req, res) => {
   const { orderId } = req.params;

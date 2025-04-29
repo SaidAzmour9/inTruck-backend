@@ -88,53 +88,7 @@ async function createOrder(req, res) {
   }
 }
 
-//get All  deliveries Orders
-async function getAllDeliveriesOrders(req, res) {
-  try {
-    const orders = await prisma.order.findMany({
-      where: { status: 'DELIVERED' },
-      include: {
-        tracking: true,
-        truck: true,
-        payment: true
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    });
-    if (!orders) {
-      return res.status(404).json({ message: 'No orders found' });
-    }
-    res.status(200).json({ orders });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-}
 
-// get all cancelled orders
-async function getAllCancelledOrders(req, res) {
-  try {
-    const orders = await prisma.order.findMany({
-      where: { status: 'CANCELLED' },
-      include: {
-        tracking: true,
-        truck: true,
-        payment: true
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    });
-    if (!orders) {
-      return res.status(404).json({ message: 'No orders found' });
-    }
-    res.status(200).json({ orders });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-}
 
 //get order by id
 async function getOrderById(req, res) {
